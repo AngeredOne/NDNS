@@ -7,7 +7,7 @@ enable_testing()
 aux_source_directory(Sources SRC)
 
 add_executable(NDNS ${SRC})
-target_link_libraries(NDNS PUBLIC -lboost_system -lpthread -lsfml-audio -lsfml-system) 
+target_link_libraries(NDNS PUBLIC -lboost_system -lpthread SDL2) 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

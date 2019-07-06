@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <string>
-#include "Audio.h"
+#include "SDLAudioManager.h"
 
 using namespace boost;
 
@@ -18,16 +18,14 @@ typedef asio::io_service nios;
 typedef std::shared_ptr<UDPSocket> Socket_ptr;
 // Shared_ptr for thread
 typedef std::shared_ptr<std::thread> Thread_ptr;
-// Shared_ptr AudioStream
-typedef std::shared_ptr<AudioStream> AOStream_ptr;
 
-class VoiceClient : public ISoundInterprer
+class VoiceClient 
 {
 public:
     VoiceClient(std::string endpoint);
     bool Create();
     void Listen();
-    void InterpretSamples(sf::Int16 *, std::size_t size);
+    void SendAudio(Uint8* bytes, int len);
 
 private:
     Socket_ptr socket;
@@ -38,5 +36,4 @@ private:
     bool is_connected = false;
     int bitrate = 2000;
     int port = 25565;
-    AOStream_ptr audioStream;
 };
