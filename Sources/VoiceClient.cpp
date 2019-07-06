@@ -16,7 +16,7 @@ bool VoiceClient::Create()
     try
     {
         socket = std::make_shared<asio::ip::udp::socket>(net_stream, *localEndPoint);
- 
+
         is_connected = true;
         std::cout << "VoiceClient ready.\n";
         return true;
@@ -39,12 +39,14 @@ void VoiceClient::Listen()
         socket->receive_from(asio::buffer(bits, bitrate), senderEP);
         SDLAudioManager::Get().PlayAudio(bits, bitrate);
         delete bits;
-//
+        //
     }
 }
 
-void VoiceClient::SendAudio(Uint8* data, int len) {
-    if (remoteEndPoint) {
-     socket->send_to(asio::buffer(data, len), *remoteEndPoint);
+void VoiceClient::SendAudio(Uint8 *data, int len)
+{
+    if (remoteEndPoint && data)
+    {
+        socket->send_to(asio::buffer(data, len), *remoteEndPoint);
     }
 }

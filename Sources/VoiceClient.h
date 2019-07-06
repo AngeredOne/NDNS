@@ -34,6 +34,6 @@ private:
     Thread_ptr listenerThread;
     nios net_stream;
     bool is_connected = false;
-    int bitrate = 2000;
+    int bitrate = 4096;
     int port = 25565;
 };
