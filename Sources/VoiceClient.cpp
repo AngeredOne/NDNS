@@ -35,10 +35,9 @@ void VoiceClient::Listen()
     {
         Uint8 *bits = new Uint8[bitrate];
         UDPEndPoint senderEP;
-        std::cout << "";
         socket->receive_from(asio::buffer(bits, bitrate), senderEP);
         SDLAudioManager::Get().PlayAudio(bits, bitrate);
-        delete bits;
+      //  delete bits;
         //
     }
 }

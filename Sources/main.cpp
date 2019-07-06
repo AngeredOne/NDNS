@@ -56,7 +56,7 @@ int main(int, char **)
 
     while (true)
     {
-        int buf = 8024;
+        int buf = 1024;
         Uint8 *data = SDLAudioManager::Get().RecordAudio(buf);
         vclient->SendAudio(data, buf);
         //delete data;

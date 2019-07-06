@@ -39,7 +39,7 @@ Uint8 *SDLAudioManager::RecordAudio(int len)
 
     Uint8 *data = new Uint8[len];
     auto size = SDL_DequeueAudio(input, data, len);
-    SDL_Delay(100);
+    SDL_Delay(10);
     if (size == 0)
         return nullptr;
     return data;
@@ -51,12 +51,7 @@ void SDLAudioManager::PlayAudio(Uint8 *data, int len)
     if (data != NULL)
     {
 
-        auto bytesRemaining = SDL_GetQueuedAudioSize(output);
-        while (bytesRemaining > len * 2)
-        {
-            SDL_Delay(100);
-            bytesRemaining = SDL_GetQueuedAudioSize(output);
-        }
+        
         auto count = SDL_QueueAudio(output, data, len);
     }
 }
