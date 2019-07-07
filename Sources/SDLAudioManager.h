@@ -13,6 +13,9 @@ public:
 
     Uint8 *RecordAudio(int len);
     void PlayAudio(Uint8 *data, int len);
+    void StartRecord() {
+        SDL_PauseAudioDevice(input, 0);
+    }
 
 private:
 
@@ -20,8 +23,6 @@ private:
     SDLAudioManager &operator=(SDLAudioManager const &) = delete;
     SDLAudioManager()
     {
-        SDL_Init(SDL_INIT_AUDIO);
-        SDL_AudioInit(SDL_GetAudioDriver(0));
     }
 
     ~SDLAudioManager()

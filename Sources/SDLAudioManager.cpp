@@ -16,7 +16,6 @@ bool SDLAudioManager::SetupInput(const char *deviceName, SDL_AudioSpec spec)
         std::cout << "Error when opening input audio" << std::endl;
         return false;
     }
-    SDL_PauseAudioDevice(input, 0);
     return true;
 }
 
@@ -50,8 +49,6 @@ void SDLAudioManager::PlayAudio(Uint8 *data, int len)
 
     if (data != NULL)
     {
-
-        
         auto count = SDL_QueueAudio(output, data, len);
     }
 }
