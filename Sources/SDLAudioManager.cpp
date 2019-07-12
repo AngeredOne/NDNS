@@ -1,11 +1,6 @@
 #include "SDLAudioManager.h"
 #include <iostream>
 
-SDLAudioManager &SDLAudioManager::Get()
-{
-    static SDLAudioManager instance;
-    return instance;
-}
 
 bool SDLAudioManager::SetupInput(const char *deviceName, SDL_AudioSpec spec)
 {

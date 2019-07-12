@@ -4,12 +4,17 @@
 
 class Settings
 {
-    public:
+public:
+    static Settings &Get()
+    {
+        static Settings instance;
+        return instance;
+    }
+
+private:
     Settings();
-    private:
+    Settings(Settings const &) = delete;
+    Settings &operator=(Settings const &) = delete;
     void SetupFromConsole();
-
     SDL_AudioSpec config;
-
-
 };

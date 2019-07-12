@@ -6,19 +6,23 @@
 class SDLAudioManager
 {
 public:
-    static SDLAudioManager &Get();
+    static SDLAudioManager &Get()
+    {
+        static SDLAudioManager instance;
+        return instance;
+    }
 
     bool SetupInput(const char *deviceName, SDL_AudioSpec spec);
     bool SetupOutput(const char *deviceName, SDL_AudioSpec spec);
 
     Uint8 *RecordAudio(int len);
     void PlayAudio(Uint8 *data, int len);
-    void StartRecord() {
+    void StartRecord()
+    {
         SDL_PauseAudioDevice(input, 0);
     }
 
 private:
-
     SDLAudioManager(SDLAudioManager const &) = delete;
     SDLAudioManager &operator=(SDLAudioManager const &) = delete;
     SDLAudioManager()

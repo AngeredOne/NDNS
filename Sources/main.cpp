@@ -26,8 +26,7 @@ int main(int, char **)
     SDL_Init(SDL_INIT_AUDIO);
     SDL_AudioInit(SDL_GetAudioDriver(0));
     SDLAudioManager::Get();
-
-    Settings* settings = new Settings();
+    Settings::Get();
 
     std::cout << "Enter IP: ";
     std::string remoteIP;
