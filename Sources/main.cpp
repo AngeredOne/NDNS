@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include "VoiceClient.h"
 #include "Settings.h"
+#include "NDNS.h"
 
 void Record(VoiceClient *vclient)
 {
@@ -17,29 +18,7 @@ void Record(VoiceClient *vclient)
 
 int main(int, char **)
 {
-    //NO DISCORD NO SKYPE
-    std::cout << "<---===:::::::::::::::::::::===--->\n";
-    std::cout << "<---===       N_D_N_S       ===--->\n";
-    std::cout << "<---=== NO DISCORD NO SKYPE ===--->\n";
-    std::cout << "<---===:::::::::::::::::::::===--->\n";
 
-    SDL_Init(SDL_INIT_AUDIO);
-    SDL_AudioInit(SDL_GetAudioDriver(0));
-    Settings::Get();
-
-    SDLAudioManager::Get().InitProcessors();
-    std::cout << "Enter IP: ";
-    std::string remoteIP;
-    getline(std::cin, remoteIP);
-    VoiceClient *vclient = new VoiceClient(remoteIP);
-
-    std::thread *recordThread = new std::thread(&Record, vclient);
-    //Record(vclient);
-    while (true)
-    {
-        std::string message;
-        getline(std::cin, message);
-        vclient->SendMessage(message);
-    }
-    delete recordThread;
+   NDNS::Get().Start();
+   while(true);
 }
