@@ -1,10 +1,13 @@
 #include "SDLAudioManager.h"
 #include <iostream>
 
-SDLAudioManager &SDLAudioManager::Get()
-{
-    static SDLAudioManager instance;
-    return instance;
+
+void SDLAudioManager::InitProcessors() {
+  
+  
+  inputProcessors.push_back(std::make_shared<Volume>(std::bind(&Loudness::GetVolumeCoef, Settings::Get().input.get())));
+
+  outputProcessors.push_back(std::make_shared<Volume>(std::bind(&Loudness::GetVolumeCoef, Settings::Get().output.get())));
 }
 
 bool SDLAudioManager::SetupInput(const char *deviceName, SDL_AudioSpec spec)
@@ -33,22 +36,28 @@ bool SDLAudioManager::SetupOutput(const char *deviceName, SDL_AudioSpec spec)
     return true;
 }
 
-Uint8 *SDLAudioManager::RecordAudio(int len)
+Sint16 *SDLAudioManager::RecordAudio(int len)
 {
 
-    Uint8 *data = new Uint8[len];
+    Sint16 *data = new Sint16[len];
     auto size = SDL_DequeueAudio(input, data, len);
     SDL_Delay(10);
     if (size == 0)
         return nullptr;
+    for (auto processor : inputProcessors) {
+        processor->ProcessSound(data, len);
+    }
     return data;
 }
 
-void SDLAudioManager::PlayAudio(Uint8 *data, int len)
+void SDLAudioManager::PlayAudio(Sint16 *data, int len)
 {
 
     if (data != NULL)
     {
+        for (auto processor : outputProcessors) {
+            processor->ProcessSound(data, len);
+        }
         auto count = SDL_QueueAudio(output, data, len);
     }
 }
