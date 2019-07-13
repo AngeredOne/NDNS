@@ -1,6 +1,42 @@
 #include "Settings.h"
 #include "SDLAudioManager.h"
 #include <iostream>
+#include <math.h>
+
+Loudness::Loudness(float _volume)
+{
+    SetVolume(_volume);
+}
+
+void Loudness::SetVolume(int percentage)
+{
+    if (percentage < 0)
+    {
+        volume = 0;
+        return;
+    }
+    if (percentage > MaxVolumeValue())
+    {
+        volume = MaxVolumeValue();
+        return;
+    }
+    volume = percentage;
+}
+
+int Loudness::GetVolume() const
+{
+    return volume;
+}
+
+float Loudness::GetVolumeCoef() const
+{
+    return volume / 100.f;
+}
+
+constexpr int Loudness::MaxVolumeValue()
+{
+    return MAX_VOLUME * 100;
+}
 
 Settings::Settings()
 {
