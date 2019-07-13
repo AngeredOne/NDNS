@@ -28,10 +28,10 @@ bool SDLAudioManager::SetupOutput(const char *deviceName, SDL_AudioSpec spec)
     return true;
 }
 
-Uint8 *SDLAudioManager::RecordAudio(int len)
+Sint16 *SDLAudioManager::RecordAudio(int len)
 {
 
-    Uint8 *data = new Uint8[len];
+    Sint16 *data = new Sint16[len];
     auto size = SDL_DequeueAudio(input, data, len);
     SDL_Delay(10);
     if (size == 0)
@@ -39,7 +39,7 @@ Uint8 *SDLAudioManager::RecordAudio(int len)
     return data;
 }
 
-void SDLAudioManager::PlayAudio(Uint8 *data, int len)
+void SDLAudioManager::PlayAudio(Sint8 *data, int len)
 {
 
     if (data != NULL)

@@ -15,8 +15,8 @@ public:
     bool SetupInput(const char *deviceName, SDL_AudioSpec spec);
     bool SetupOutput(const char *deviceName, SDL_AudioSpec spec);
 
-    Uint8 *RecordAudio(int len);
-    void PlayAudio(Uint8 *data, int len);
+    Sint16 *RecordAudio(int len);
+    void PlayAudio(Sint8 *data, int len);
     void StartRecord()
     {
         SDL_PauseAudioDevice(input, 0);

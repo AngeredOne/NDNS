@@ -56,7 +56,7 @@ public:
     void ListenAudio();
     void ListenChat();
 
-    void SendAudio(Uint8* bytes, int len);
+    void SendAudio(Sint8* bytes, int len);
     void SendMessage(std::string msg);
 
 private:
