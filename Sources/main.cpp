@@ -30,8 +30,8 @@ int main(int, char **)
     SDLAudioManager::Get().InitProcessors();
     std::cout << "Enter IP: ";
     std::string remoteIP;
-   // getline(std::cin, remoteIP);
-    VoiceClient *vclient = new VoiceClient("127.0.0.1");
+    getline(std::cin, remoteIP);
+    VoiceClient *vclient = new VoiceClient(remoteIP);
 
     std::thread *recordThread = new std::thread(&Record, vclient);
     //Record(vclient);
