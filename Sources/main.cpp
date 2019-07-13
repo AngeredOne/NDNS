@@ -9,8 +9,8 @@ void Record(VoiceClient *vclient)
     while (true)
     {
         int buf = 1024;
-        Uint8 *data = SDLAudioManager::Get().RecordAudio(buf);
-        vclient->SendAudio(data, buf);
+        Sint16 *data = SDLAudioManager::Get().RecordAudio(buf);
+        vclient->SendAudio((Sint8*) data, buf);
         delete data;
     }
 }
