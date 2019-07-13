@@ -6,8 +6,6 @@
 
 using namespace boost;
 
-// Define simple "byte"
-typedef int8_t byte;
 // UDP EndPoint type
 typedef asio::ip::udp::endpoint UDPEndPoint;
 // Shared_ptr on UDP EndPoint
@@ -58,6 +56,8 @@ public:
 
     void SendAudio(Uint8* bytes, int len);
     void SendMessage(std::string msg);
+
+    bool inChat = false;
 
 private:
     std::shared_ptr<NDNS_Client> client_sockets = nullptr;
