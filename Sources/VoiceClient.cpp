@@ -1,5 +1,4 @@
 #include "VoiceClient.h"
-#include "compressor.c"
 
 VoiceClient::VoiceClient(std::string endpoint)
 {
@@ -49,7 +48,7 @@ void VoiceClient::ListenAudio()
 {
     while (is_connected)
     {
-        Sint8 *bits = new Sint8[bitrate];
+        Sint16 *bits = new Sint16[bitrate];
         UDPEndPoint senderEP;
         client_sockets->voice_socket->receive_from(asio::buffer(bits, bitrate), senderEP);
         SDLAudioManager::Get().PlayAudio(bits, bitrate);

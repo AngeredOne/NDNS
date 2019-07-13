@@ -25,13 +25,13 @@ int main(int, char **)
 
     SDL_Init(SDL_INIT_AUDIO);
     SDL_AudioInit(SDL_GetAudioDriver(0));
-    SDLAudioManager::Get();
     Settings::Get();
 
+    SDLAudioManager::Get().InitProcessors();
     std::cout << "Enter IP: ";
     std::string remoteIP;
-    getline(std::cin, remoteIP);
-    VoiceClient *vclient = new VoiceClient(remoteIP);
+   // getline(std::cin, remoteIP);
+    VoiceClient *vclient = new VoiceClient("127.0.0.1");
 
     std::thread *recordThread = new std::thread(&Record, vclient);
     //Record(vclient);

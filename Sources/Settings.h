@@ -2,6 +2,9 @@
 
 #include <SDL2/SDL.h>
 #include <math.h>
+#include <memory>
+
+
 
 class Loudness {
     public:
@@ -10,22 +13,22 @@ class Loudness {
     //For pretty output
     void SetVolume(int percentage);
     int GetVolume() const;
-
     constexpr int MaxVolumeValue();
     //For computations
     float GetVolumeCoef() const;
     private:
-    const float MAX_VOLUME = 1.5f;
-    const float MIN_VOLUME = 0.001f;
+    const float MAX_VOLUME = 4.f;
+    const float MIN_VOLUME = 0.01f;
     
-    int volume = 50;
+    int volume = 1;
 
 };
 
 class Settings
 {
 public:
-    Loudness input;
+    std::shared_ptr<Loudness> input;
+    std::shared_ptr<Loudness> output;
     static Settings &Get()
     {
         static Settings instance;
