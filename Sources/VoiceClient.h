@@ -5,6 +5,9 @@
 #include "SDLAudioManager.h"
 
 using namespace boost;
+using namespace boost::asio;
+using namespace boost::asio::ip;
+using boost::asio::ip::tcp;
 
 // UDP EndPoint type
 typedef asio::ip::udp::endpoint UDPEndPoint;
@@ -18,6 +21,7 @@ typedef asio::io_service nios;
 typedef std::shared_ptr<UDPSocket> Socket_ptr;
 // Shared_ptr for thread
 typedef std::shared_ptr<std::thread> Thread_ptr;
+typedef std::shared_ptr<tcp::socket> TCP_socketptr;
 
 struct NDNS_Client
 {
@@ -31,11 +35,11 @@ struct NDNS_Client
 
     NDNS_Client(uint16_t c_port, uint16_t a_port, uint16_t v_port, std::string remote_endpoint)
     {
-        auto chat_ep  = std::make_shared<UDPEndPoint>(asio::ip::udp::v4(), c_port);
+        auto chat_ep = std::make_shared<UDPEndPoint>(asio::ip::udp::v4(), c_port);
         auto voice_ep = std::make_shared<UDPEndPoint>(asio::ip::udp::v4(), a_port);
         auto video_ep = std::make_shared<UDPEndPoint>(asio::ip::udp::v4(), v_port);
 
-        chat_remoteEP  = std::make_shared<UDPEndPoint>(asio::ip::address::from_string(remote_endpoint), c_port);
+        chat_remoteEP = std::make_shared<UDPEndPoint>(asio::ip::address::from_string(remote_endpoint), c_port);
         voice_remoteEP = std::make_shared<UDPEndPoint>(asio::ip::address::from_string(remote_endpoint), a_port);
         video_remoteEP = std::make_shared<UDPEndPoint>(asio::ip::address::from_string(remote_endpoint), v_port);
 
@@ -45,7 +49,7 @@ struct NDNS_Client
     }
 };
 
-class VoiceClient 
+class VoiceClient
 {
 public:
     VoiceClient(std::string endpoint);
@@ -53,19 +57,40 @@ public:
 
     void ListenAudio();
     void ListenChat();
+    void ListenMicrophone();
 
-    void SendAudio(Sint8* bytes, int len);
+    void SendAudio(short *bytes, int len);
     void SendMessage(std::string msg);
 
     bool inChat = false;
+    bool muteIn = false;
+    bool muteOut = false;
 
 private:
     std::shared_ptr<NDNS_Client> client_sockets = nullptr;
+
     Thread_ptr chatThread;
     Thread_ptr voiceThread;
+    Thread_ptr microphoneThread;
+
     bool is_connected = false;
     int bitrate = 1024;
     int port = 25565;
 };
 
-//195.46.123.219
+class TCPClient
+{
+
+public:
+    void Create(tcp::endpoint ep, bool isHost = false);
+    void HandleMessage();
+    void Send(char *data, int size);
+
+    VoiceClient *GetVoiceClient();
+
+private:
+    io_service service;
+    bool connected;
+    TCP_socketptr with;
+    VoiceClient *voiceClient;
+};

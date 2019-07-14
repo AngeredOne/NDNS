@@ -27,18 +27,17 @@ class Loudness {
 class Settings
 {
 public:
-    std::shared_ptr<Loudness> input;
-    std::shared_ptr<Loudness> output;
+    std::shared_ptr<Loudness> input = std::make_shared<Loudness>(100);
+    std::shared_ptr<Loudness> output = std::make_shared<Loudness>(100);
     static Settings &Get()
     {
         static Settings instance;
         return instance;
     }
-
+    void SetupFromConsole();
 private:
     Settings();
     Settings(Settings const &) = delete;
     Settings &operator=(Settings const &) = delete;
-    void SetupFromConsole();
     SDL_AudioSpec config;
 };

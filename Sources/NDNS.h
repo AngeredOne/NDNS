@@ -24,7 +24,6 @@ using namespace boost::asio::ip;
 using boost::asio::ip::tcp;
 
 typedef u_int8_t byte;
-typedef std::shared_ptr<tcp::socket> TCP_socketptr;
 typedef std::shared_ptr<std::thread> Thread_ptr;
 typedef std::pair<std::string, std::list<std::string>> ArgsPair;
 typedef std::map<ArgsPair::first_type, ArgsPair::second_type> ArgsMap;
@@ -43,6 +42,9 @@ enum OUTPUT_CODE
     CHAT = 3,
     DEBUG = 4
 };
+
+class TCPClient;
+class VoiceClient;
 
 class NDNS
 {
@@ -66,8 +68,9 @@ private:
     //Settings settings;
     std::map<char, Command> commands;
 
-    TCP_socketptr globalSocket = nullptr;
-    TCP_socketptr directSocket = nullptr;
+    std::shared_ptr<TCPClient> direct_c = nullptr;
+    VoiceClient* vc = nullptr;
+
 
     std::mutex m_input;
     std::queue<std::string> inputStorage;
@@ -75,6 +78,7 @@ private:
     void ListenInput();
 
     Thread_ptr inputThread = nullptr;
+    Thread_ptr tcpThread = nullptr;
 
     void Connection_cmd(ArgsMap args);
     void Volume_cmd(ArgsMap args);

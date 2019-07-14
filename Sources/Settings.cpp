@@ -45,12 +45,6 @@ Settings::Settings()
     config.channels = 1;
     config.samples = 1024;
     config.callback = nullptr;
-
-    SetupFromConsole();
-
-    input = std::make_shared<Loudness>(100);
-    output = std::make_shared<Loudness>(400);
-
 }
 
 void Settings::SetupFromConsole()
