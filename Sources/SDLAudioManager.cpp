@@ -1,5 +1,6 @@
 #include "SDLAudioManager.h"
-#include <iostream>
+#include "SoundProcessing.h"
+#include "Settings.h"
 
 
 void SDLAudioManager::InitProcessors() {

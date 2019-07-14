@@ -1,5 +1,5 @@
 #include "VoiceClient.h"
-#include "NDNS.h"
+#include "SDLAudioManager.h"
 
 void TCPClient::Create(tcp::endpoint ep, bool isHost)
 {
@@ -102,7 +102,7 @@ void VoiceClient::ListenChat()
         {
             char *msg = new char[32];
             UDPEndPoint senderEP;
-            client_sockets->chat_socket->receive_from(asio::buffer(msg, 32), senderEP);
+            client_sockets->chat_socket->receive_from(buffer(msg, 32), senderEP);
             message += std::string(std::string(msg, 32).c_str());
             delete msg;
         }
@@ -118,7 +118,7 @@ void VoiceClient::ListenAudio()
     {
         Sint16 *bits = new Sint16[bitrate];
         UDPEndPoint senderEP;
-        client_sockets->voice_socket->receive_from(asio::buffer(bits, bitrate), senderEP);
+        client_sockets->voice_socket->receive_from(buffer(bits, bitrate), senderEP);
         if (!muteOut)
         {
             SDLAudioManager::Get().PlayAudio(bits, bitrate);
@@ -133,7 +133,7 @@ void VoiceClient::SendAudio(short *data, int len)
     {
         if (!muteIn)
         {
-            client_sockets->voice_socket->send_to(asio::buffer(data, len), *client_sockets->voice_remoteEP);
+            client_sockets->voice_socket->send_to(buffer(data, len), *client_sockets->voice_remoteEP);
         }
         delete data;
     }
@@ -144,7 +144,7 @@ void VoiceClient::SendMessage(std::string msg)
     if (client_sockets->chat_remoteEP && msg != "")
     {
         msg += "<|-|>";
-        client_sockets->chat_socket->send_to(asio::buffer(msg.data(), msg.size()), *client_sockets->chat_remoteEP);
+        client_sockets->chat_socket->send_to(buffer(msg.data(), msg.size()), *client_sockets->chat_remoteEP);
     }
 }
 

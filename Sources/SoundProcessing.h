@@ -1,7 +1,5 @@
 #pragma once
-#include "SDLAudioManager.h"
-#include "Settings.h"
-#include <functional>
+#include "NDNS.h"
 class AbstractSoundProcessor {
     public:
     virtual void ProcessSound(Sint16* samples, int len)=0;

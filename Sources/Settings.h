@@ -1,8 +1,5 @@
 #pragma once
-
-#include <SDL2/SDL.h>
-#include <math.h>
-#include <memory>
+#include "NDNS.h"
 
 
 

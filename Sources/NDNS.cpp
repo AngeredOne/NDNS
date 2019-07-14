@@ -1,6 +1,13 @@
 #include "NDNS.h"
 #include "SDLAudioManager.h"
 #include "VoiceClient.h"
+#include "Settings.h"
+
+int main(int, char **)
+{
+   NDNS::Get().Start();
+}
+
 
 NDNS::NDNS()
 {

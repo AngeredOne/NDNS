@@ -1,12 +1,5 @@
 #pragma once
-#include <iostream>
-#include <SDL2/SDL.h>
-#include <unistd.h>
-#include <list>
-#include <functional>
-
-#include "SoundProcessing.h"
-#include "Settings.h"
+#include "NDNS.h"
 
 class AbstractSoundProcessor;
 

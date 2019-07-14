@@ -1,7 +1,6 @@
 #include "Settings.h"
 #include "SDLAudioManager.h"
-#include <iostream>
-#include <math.h>
+
 Loudness::Loudness(float _volume)
 {
     SetVolume(_volume);

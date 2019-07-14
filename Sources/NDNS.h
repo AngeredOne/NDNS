@@ -6,8 +6,7 @@
 @   Точка входа в приложение. NDNS служит для инициализации настроек, обработки команд,глобального TCP соединения, происходит работа с инпутом\аутпутом, управляет
 @   процессами общения.
  */
-
-#include "Settings.h"
+#pragma once
 #include <string>
 #include <map>
 #include <functional>
@@ -27,6 +26,21 @@ typedef u_int8_t byte;
 typedef std::shared_ptr<std::thread> Thread_ptr;
 typedef std::pair<std::string, std::list<std::string>> ArgsPair;
 typedef std::map<ArgsPair::first_type, ArgsPair::second_type> ArgsMap;
+
+
+// UDP EndPoint type
+typedef ip::udp::endpoint UDPEndPoint;
+// Shared_ptr on UDP EndPoint
+typedef std::shared_ptr<UDPEndPoint> UDPEP_PTR;
+// UDP Socket type
+typedef ip::udp::socket UDPSocket;
+// Boost::asio network in\out stream
+typedef io_service nios;
+// Shared_ptr for UDPSocket
+typedef std::shared_ptr<UDPSocket> Socket_ptr;
+// Shared_ptr for thread
+typedef std::shared_ptr<std::thread> Thread_ptr;
+typedef std::shared_ptr<tcp::socket> TCP_socketptr;
 
 struct Command
 {

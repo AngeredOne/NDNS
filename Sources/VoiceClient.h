@@ -1,27 +1,6 @@
-#include <boost/asio.hpp>
-#include <iostream>
-#include <thread>
-#include <string>
-#include "SDLAudioManager.h"
+#pragma once
+#include "NDNS.h"
 
-using namespace boost;
-using namespace boost::asio;
-using namespace boost::asio::ip;
-using boost::asio::ip::tcp;
-
-// UDP EndPoint type
-typedef asio::ip::udp::endpoint UDPEndPoint;
-// Shared_ptr on UDP EndPoint
-typedef std::shared_ptr<UDPEndPoint> UDPEP_PTR;
-// UDP Socket type
-typedef asio::ip::udp::socket UDPSocket;
-// Boost::asio network in\out stream
-typedef asio::io_service nios;
-// Shared_ptr for UDPSocket
-typedef std::shared_ptr<UDPSocket> Socket_ptr;
-// Shared_ptr for thread
-typedef std::shared_ptr<std::thread> Thread_ptr;
-typedef std::shared_ptr<tcp::socket> TCP_socketptr;
 
 struct NDNS_Client
 {
@@ -35,17 +14,17 @@ struct NDNS_Client
 
     NDNS_Client(uint16_t c_port, uint16_t a_port, uint16_t v_port, std::string remote_endpoint)
     {
-        auto chat_ep = std::make_shared<UDPEndPoint>(asio::ip::udp::v4(), c_port);
-        auto voice_ep = std::make_shared<UDPEndPoint>(asio::ip::udp::v4(), a_port);
-        auto video_ep = std::make_shared<UDPEndPoint>(asio::ip::udp::v4(), v_port);
+        auto chat_ep = std::make_shared<UDPEndPoint>(ip::udp::v4(), c_port);
+        auto voice_ep = std::make_shared<UDPEndPoint>(ip::udp::v4(), a_port);
+        auto video_ep = std::make_shared<UDPEndPoint>(ip::udp::v4(), v_port);
 
-        chat_remoteEP = std::make_shared<UDPEndPoint>(asio::ip::address::from_string(remote_endpoint), c_port);
-        voice_remoteEP = std::make_shared<UDPEndPoint>(asio::ip::address::from_string(remote_endpoint), a_port);
-        video_remoteEP = std::make_shared<UDPEndPoint>(asio::ip::address::from_string(remote_endpoint), v_port);
+        chat_remoteEP = std::make_shared<UDPEndPoint>(ip::address::from_string(remote_endpoint), c_port);
+        voice_remoteEP = std::make_shared<UDPEndPoint>(ip::address::from_string(remote_endpoint), a_port);
+        video_remoteEP = std::make_shared<UDPEndPoint>(ip::address::from_string(remote_endpoint), v_port);
 
-        chat_socket = std::make_shared<asio::ip::udp::socket>(n_io_stream, *chat_ep);
-        voice_socket = std::make_shared<asio::ip::udp::socket>(n_io_stream, *voice_ep);
-        video_socket = std::make_shared<asio::ip::udp::socket>(n_io_stream, *video_ep);
+        chat_socket = std::make_shared<ip::udp::socket>(n_io_stream, *chat_ep);
+        voice_socket = std::make_shared<ip::udp::socket>(n_io_stream, *voice_ep);
+        video_socket = std::make_shared<ip::udp::socket>(n_io_stream, *video_ep);
     }
 };
 
