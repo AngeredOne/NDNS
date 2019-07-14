@@ -239,7 +239,7 @@ void NDNS::Mute_cmd(ArgsMap args)
     // }
     // else if (args.find("output") != args.end())
     // {
-    //     bool mute = atoi(args["input"].front().c_str());
+    //     bool mute = atoi(args["output"].front().c_str());
     //     direct_c->GetVoiceClient()->muteOut = mute;
     // }
     if (args.find("all") != args.end())
@@ -255,7 +255,7 @@ void NDNS::Mute_cmd(ArgsMap args)
     }
     else if (args.find("output") != args.end())
     {
-        bool mute = atoi(args["input"].front().c_str());
+        bool mute = atoi(args["output"].front().c_str());
         vc->muteOut = mute;
     }
 }
