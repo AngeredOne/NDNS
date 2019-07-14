@@ -33,7 +33,7 @@ void NDNS::Start()
     commands.insert(std::pair<char, Command>('c', connect));
 
     Command volume{"Volume (/v)",
-                   "Change volume \n -setup - Setup devices for input and output \n -input [1..100] - Change microphone volume.\n -output [1..100]- Change output volume.",
+                   "Change volume \n -setup - Setup devices for input and output \n -input [1..100] - Change microphone volume.\n -output [1..100]- Change output volume.\n -threshold [1..100] - change input threshold",
                    std::bind(&NDNS::Volume_cmd, this, std::placeholders::_1)};
     commands.insert(std::pair<char, Command>('v', volume));
 
@@ -211,16 +211,20 @@ void NDNS::Volume_cmd(ArgsMap args)
     {
         auto perc = atoi(args["input"].front().c_str());
         Settings::Get().input->SetVolume(perc);
-    }
+    } 
     if (args.find("output") != args.end())
     {
         auto perc = atoi(args["output"].front().c_str());
         Settings::Get().output->SetVolume(perc);
-    }
+    } 
     if (args.find("setup") != args.end())
     {
         Settings::Get().SetupFromConsole();
         SDLAudioManager::Get().InitProcessors();
+    } 
+    if (args.find("threshold") != args.end()) {
+        auto perc = atoi(args["threshold"].front().c_str());
+        Settings::Get().input->SetThreshold(perc);
     }
 }
 
