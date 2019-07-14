@@ -49,7 +49,7 @@ void NDNS::Start()
                  std::bind(&NDNS::Mute_cmd, this, std::placeholders::_1)};
     commands.insert(std::pair<char, Command>('m', mute));
 
-    inputThread = Thread_ptr(new std::thread(&NDNS::ListenInput, this));
+    ListenInput();
 }
 
 void NDNS::WriteOutput(std::string output, byte code)
@@ -129,8 +129,11 @@ void NDNS::ListenInput()
                 {
                     WriteOutput(e.what(), ERROR);
                 }
-
-                command->second.handler(args);
+                try {
+                    command->second.handler(args);
+                } catch (std::exception e) {
+                    WriteOutput(e.what(), ERROR);
+                }
             }
         }
         else if (direct_c)

@@ -17,6 +17,7 @@
 #include <thread>
 #include <list>
 #include <queue>
+#include <exception>
 
 using namespace boost::asio;
 using namespace boost::asio::ip;
