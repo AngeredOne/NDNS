@@ -10,17 +10,28 @@ class Loudness {
     public:
     Loudness() {}
     Loudness(float _volume);
-    //For pretty output
+    //VOLUME
+    //Interface
     void SetVolume(int percentage);
     int GetVolume() const;
     constexpr int MaxVolumeValue();
-    //For computations
+    //Computations
     float GetVolumeCoef() const;
+    //THRESHOLD
+    //Interface
+    void SetThreshold(int percentage);
+    int GetThreshold() const;
+    //Computations
+    float GetThresholdCoef() const;
     private:
+
     const float MAX_VOLUME = 4.f;
     const float MIN_VOLUME = 0.01f;
-    
     int volume = 1;
+
+    const int MAX_THRESHOLD = 100;
+    const int MIN_THRESHOLD = 0;
+    int threshold = 15;
 
 };
 

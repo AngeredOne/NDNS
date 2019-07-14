@@ -37,6 +37,28 @@ constexpr int Loudness::MaxVolumeValue()
     return MAX_VOLUME * 100;
 }
 
+int Loudness::GetThreshold() const {
+    return threshold;
+}
+
+void Loudness::SetThreshold(int perc) {
+    if (perc > MAX_THRESHOLD) {
+        threshold = MAX_THRESHOLD;
+        return;
+    }
+    if (perc < MIN_THRESHOLD) {
+        threshold = MIN_THRESHOLD;
+        return;
+    }
+    threshold = perc;
+}
+
+float Loudness::GetThresholdCoef() const {
+    return threshold * 120.f;
+}
+
+
+
 Settings::Settings()
 {
     SDL_zero(config);

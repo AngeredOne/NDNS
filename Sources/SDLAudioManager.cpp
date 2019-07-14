@@ -6,6 +6,7 @@ void SDLAudioManager::InitProcessors() {
   
   
   inputProcessors.push_back(std::make_shared<Volume>(std::bind(&Loudness::GetVolumeCoef, Settings::Get().input.get())));
+  inputProcessors.push_back(std::make_shared<Threshold>(std::bind(&Loudness::GetThresholdCoef, Settings::Get().input.get())));
 
   outputProcessors.push_back(std::make_shared<Volume>(std::bind(&Loudness::GetVolumeCoef, Settings::Get().output.get())));
 }

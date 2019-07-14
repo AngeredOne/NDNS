@@ -15,3 +15,11 @@ class Volume : public AbstractSoundProcessor {
     private: 
     std::function<float()> GetVolume;
 };
+
+class Threshold : public AbstractSoundProcessor {
+    public:
+    Threshold(std::function<float()> func) : GetThreshold(func) {}
+    virtual void ProcessSound(Sint16* samples, int len);
+    private:
+    std::function<float()> GetThreshold;
+};
