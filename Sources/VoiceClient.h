@@ -58,10 +58,14 @@ class TCPClient
 {
 
 public:
-    void Create(tcp::endpoint ep, bool isHost, std::string nick);
+    TCPClient(std::string nick) : nick(nick){};
+    void Connect(std::string ip);
+    void Host();
     void HandleMessage();
     void Send(int16 code, int8 *data, size_t size);
     void RestartUDP();
+
+    void WaitSocket();
 
     const bool IsConnected() { return connected; };
 
@@ -71,5 +75,6 @@ private:
     io_service service;
     bool connected;
     TCP_socketptr with;
-    VoiceClient *voiceClient;
+    VoiceClient *voiceClient = nullptr;
+    std::string nick;
 };

@@ -29,28 +29,49 @@ void NDNS::Connection_cmd(ArgsMap args)
 {
     if (!direct_c || !direct_c->IsConnected())
     {
-        direct_c = std::make_shared<TCPClient>();
+        if (tcpThread)
+        {
+            tcpThread->detach();
+            tcpThread = nullptr;
+        }
+
         if (args.find("host") != args.end())
         {
-            tcp::endpoint ep(tcp::v4(), 25560);
-            std::string nick = args["host"].front();
-            tcpThread = std::make_shared<std::thread>(&TCPClient::Create, direct_c, ep, true, nick);
+            std::string nick;
+
+            if (args.size() == 0)
+            {
+                nick = Settings::Get().GetField(S_LAST_NICKNAME)->GetValue();
+            }
+            else
+            {
+                nick = args["host"].front();
+                Settings::Get().SetField(S_LAST_NICKNAME, nick);
+            }
+
+            direct_c = std::make_shared<TCPClient>(nick);
+
+            tcpThread = std::make_shared<std::thread>(&TCPClient::Host, direct_c);
         }
         else
         {
             std::string ip;
             std::string nick;
-            if (args.size() == 0) {
+            if (args.size() == 0)
+            {
                 ip = Settings::Get().GetField(S_LAST_IP)->GetValue();
                 nick = Settings::Get().GetField(S_LAST_NICKNAME)->GetValue();
-            } else {
+            }
+            else
+            {
                 ip = args[" "].front();
                 nick = args[" "].back();
-                Settings::Get().SetField(S_LAST_IP, ip);    
+                Settings::Get().SetField(S_LAST_IP, ip);
                 Settings::Get().SetField(S_LAST_NICKNAME, nick);
             }
-            tcp::endpoint ep(ip::address::from_string(ip), 25560);
-            tcpThread = std::make_shared<std::thread>(&TCPClient::Create, direct_c, ep, false, nick);
+            
+            direct_c = std::make_shared<TCPClient>(nick);
+            tcpThread = std::make_shared<std::thread>(&TCPClient::Connect, direct_c, ip);
         }
     }
 }
