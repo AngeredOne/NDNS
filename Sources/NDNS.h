@@ -7,41 +7,8 @@
 @   процессами общения.
  */
 #pragma once
-#include <string>
-#include <map>
-#include <functional>
-#include <boost/asio.hpp>
-#include <mutex>
-#include <iostream>
-#include <SDL2/SDL.h>
-#include <thread>
-#include <list>
-#include <queue>
-#include <exception>
 
-using namespace boost::asio;
-using namespace boost::asio::ip;
-using boost::asio::ip::tcp;
-
-typedef u_int8_t byte;
-typedef std::shared_ptr<std::thread> Thread_ptr;
-typedef std::pair<std::string, std::list<std::string>> ArgsPair;
-typedef std::map<ArgsPair::first_type, ArgsPair::second_type> ArgsMap;
-
-
-// UDP EndPoint type
-typedef ip::udp::endpoint UDPEndPoint;
-// Shared_ptr on UDP EndPoint
-typedef std::shared_ptr<UDPEndPoint> UDPEP_PTR;
-// UDP Socket type
-typedef ip::udp::socket UDPSocket;
-// Boost::asio network in\out stream
-typedef io_service nios;
-// Shared_ptr for UDPSocket
-typedef std::shared_ptr<UDPSocket> Socket_ptr;
-// Shared_ptr for thread
-typedef std::shared_ptr<std::thread> Thread_ptr;
-typedef std::shared_ptr<tcp::socket> TCP_socketptr;
+#include "Definitions.h"
 
 struct Command
 {
@@ -64,35 +31,33 @@ class VoiceClient;
 class NDNS
 {
 public:
-
     static NDNS &Get();
 
     std::string GetInput();
-    void WriteOutput(std::string output, byte code);
+    void WriteOutput(std::string output, int8 code);
     void Start();
 
     std::list<std::string> Split(std::string input, std::string split, bool inversive = false);
     std::string Reverse(std::string input);
 
 private:
-
     NDNS();
     NDNS(const NDNS &) = delete;
     NDNS operator=(const NDNS &) = delete;
+    void InitCommands();
 
     //Settings settings;
     std::map<char, Command> commands;
 
     std::shared_ptr<TCPClient> direct_c = nullptr;
-    VoiceClient* vc = nullptr;
-
+    VoiceClient *vc = nullptr;
 
     std::mutex m_input;
     std::queue<std::string> inputStorage;
 
     void ListenInput();
+    ArgsMap *ParseCommand(std::string input);
 
-    Thread_ptr inputThread = nullptr;
     Thread_ptr tcpThread = nullptr;
 
     void Connection_cmd(ArgsMap args);
