@@ -21,10 +21,6 @@ public:
 
     Sint16 *RecordAudio(int len);
     void PlayAudio(Sint16 *data, int len);
-    void StartRecord()
-    {
-        SDL_PauseAudioDevice(input, 0);
-    }
 
 private:
     SDLAudioManager(SDLAudioManager const &) = delete;

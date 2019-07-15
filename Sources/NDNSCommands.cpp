@@ -19,11 +19,14 @@ void NDNS::InitCommands()
                  "Mute or unmute \n -input [0\\1] - Mute microphone.\n -output [0\\1] - Mute output.",
                  std::bind(&NDNS::Mute_cmd, this, std::placeholders::_1)};
     commands.insert(std::pair<char, Command>('m', mute));
+
+    Command settings{"Settings (/v)", "", std::bind(&NDNS::Settings_cmd, this, std::placeholders::_1)};
+    commands.insert(std::pair<char, Command>('s', settings));
 }
 
 void NDNS::Connection_cmd(ArgsMap args)
 {
-    if (!direct_c)
+    if (!direct_c || !direct_c->IsConnected())
     {
         direct_c = std::make_shared<TCPClient>();
         if (args.find("host") != args.end())
@@ -46,23 +49,27 @@ void NDNS::Volume_cmd(ArgsMap args)
 {
     if (args.find("input") != args.end())
     {
-        auto perc = atoi(args["input"].front().c_str());
-        Settings::Get().input->SetVolume(perc);
+        Settings::Get().SetField(S_INPUT_DEVICE, args["input"].front());
     }
     if (args.find("output") != args.end())
     {
-        auto perc = atoi(args["output"].front().c_str());
-        Settings::Get().output->SetVolume(perc);
+        Settings::Get().SetField(S_OUTPUT_DEVICE, args["output"].front());
     }
     if (args.find("setup") != args.end())
     {
         Settings::Get().SetupFromConsole();
-        SDLAudioManager::Get().InitProcessors();
     }
     if (args.find("threshold") != args.end())
     {
-        auto perc = atoi(args["threshold"].front().c_str());
-        Settings::Get().input->SetThreshold(perc);
+        Settings::Get().SetField(S_THRESHOLD_IN, args["threshold"].front());
+    }
+    if (args.find("start") != args.end())
+    {
+        SDLAudioManager::Get().Start();
+    }
+    if (args.find("stop") != args.end())
+    {
+        SDLAudioManager::Get().Stop();
     }
 }
 
@@ -99,5 +106,11 @@ void NDNS::Mute_cmd(ArgsMap args)
     {
         bool mute = atoi(args["output"].front().c_str());
         vc->muteOut = mute;
+    }
+}
+
+void NDNS::Settings_cmd(ArgsMap args) {
+    if (args.find("save") != args.end()) {
+        Settings::Get().SaveConfig();
     }
 }

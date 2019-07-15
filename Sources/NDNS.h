@@ -64,4 +64,5 @@ private:
     void Connection_cmd(ArgsMap args);
     void Volume_cmd(ArgsMap args);
     void Mute_cmd(ArgsMap args);
+    void Settings_cmd(ArgsMap args);
 };

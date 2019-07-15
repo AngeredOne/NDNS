@@ -1,6 +1,22 @@
 #include "VoiceClient.h"
 #include "SDLAudioManager.h"
 
+void TCPClient::RestartUDP()
+{
+    std::string nick = voiceClient->Nick;
+    delete voiceClient;
+    voiceClient = new VoiceClient();
+    voiceClient->Nick = nick;
+    port_sync *psyna = new port_sync();
+    psyna->a_p = voiceClient->GetVoiceSockets()->voice_socket->local_endpoint().port();
+    psyna->v_p = voiceClient->GetVoiceSockets()->video_socket->local_endpoint().port();
+
+    auto data = new int8[4];
+    memcpy(data, psyna, 4);
+    Send(03, data, 4);
+    delete data;
+}
+
 void TCPClient::Create(tcp::endpoint ep, bool isHost, std::string nick)
 {
     try
@@ -35,6 +51,7 @@ void TCPClient::Create(tcp::endpoint ep, bool isHost, std::string nick)
     catch (const std::exception &e)
     {
         NDNS::Get().WriteOutput(e.what(), ERROR);
+        connected = false;
     }
 }
 
@@ -54,13 +71,6 @@ void TCPClient::Send(int16 code, int8 *data, size_t size)
 
 void TCPClient::HandleMessage()
 {
-
-    struct port_sync
-    {
-        uint16 a_p;
-        uint16 v_p;
-    };
-
     while (connected)
     {
         int16 *code_r = new int16;
@@ -85,17 +95,32 @@ void TCPClient::HandleMessage()
                 memcpy(data, psyna, 4);
                 Send(02, data, 4);
             }
+
             break;
 
         case 2:
-
+        {
             auto data = new int16[2];
             read(*with, buffer(data, 4));
 
             auto ports = reinterpret_cast<port_sync *>(data);
             voiceClient->Create(ports->a_p, ports->v_p, with->remote_endpoint().address().to_string());
+        }
 
-            break;
+        break;
+
+        case 3:
+        {
+            auto data = new int16[2];
+            read(*with, buffer(data, 4));
+
+            auto ports = reinterpret_cast<port_sync *>(data);
+            if (!voiceClient->IsConnected())
+                voiceClient->Create(ports->a_p, ports->v_p, with->remote_endpoint().address().to_string());
+            else
+                voiceClient->GetVoiceSockets()->RegEP(ports->a_p, ports->v_p, with->remote_endpoint().address().to_string());
+        }
+        break;
         }
     }
 }
@@ -186,7 +211,7 @@ void VoiceClient::SendMessage(std::string msg)
 
 void VoiceClient::ListenMicrophone()
 {
-    SDLAudioManager::Get().StartRecord();
+    SDLAudioManager::Get().Start();
     while (is_connected)
     {
         int buf = 1024;

@@ -13,6 +13,10 @@
 #include <list>
 #include <queue>
 #include <exception>
+#include <fstream>
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem;
 
 using namespace boost::asio;
 using namespace boost::asio::ip;

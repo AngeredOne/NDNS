@@ -2,6 +2,7 @@
 #include "SDLAudioManager.h"
 #include "SettingsFields.h"
 #include "NDNS.h"
+#include "Definitions.h"
 
 Settings::Settings()
 {
@@ -36,8 +37,6 @@ void Settings::SetupFromConsole()
     index = atoi(input.c_str());
     auto inputDeviceName = SDL_GetAudioDeviceName(index, 1);
     Settings::Get().SetField(S_INPUT_DEVICE, inputDeviceName);
-
-  
 
     std::cout << std::endl;
 }
@@ -105,15 +104,15 @@ void Settings::InitFieldsMap()
     allfields.emplace(FieldPair(S_VOLUME_OUT, std::make_shared<VolumeControl>()));
     allfields.emplace(FieldPair(S_THRESHOLD_IN, std::make_shared<ThresholdControl>()));
     allfields.emplace(FieldPair(S_LAST_IP, std::make_shared<LastIP>()));
-
     allfields.emplace(FieldPair(S_INPUT_DEVICE, std::make_shared<Device>(true)));
-
     allfields.emplace(FieldPair(S_OUTPUT_DEVICE, std::make_shared<Device>(false)));
 }
 
-void Settings::PrintSettings() {
-    NDNS::Get().WriteOutput("<SELECTED SETTINGS>\n", 0 );
-    for (auto field : allfields) {
+void Settings::PrintSettings()
+{
+    NDNS::Get().WriteOutput("<SELECTED SETTINGS>\n", 0);
+    for (auto field : allfields)
+    {
         NDNS::Get().WriteOutput(field.first + ":" + field.second->GetValue() + "\n", 0);
     }
     NDNS::Get().WriteOutput("<END SETTINGS>\n", 0);

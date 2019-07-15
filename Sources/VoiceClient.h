@@ -1,6 +1,12 @@
 #pragma once
 #include "Definitions.h"
 
+struct port_sync
+{
+    uint16 a_p;
+    uint16 v_p;
+};
+
 struct VoiceSockets
 {
     Socket_ptr voice_socket;
@@ -35,6 +41,7 @@ public:
     std::string Nick = "noname";
 
     const std::shared_ptr<VoiceSockets> GetVoiceSockets() { return client_sockets; };
+    const bool IsConnected() { return is_connected; };
 
 private:
     std::shared_ptr<VoiceSockets> client_sockets = nullptr;
@@ -56,6 +63,9 @@ public:
     void Create(tcp::endpoint ep, bool isHost, std::string nick);
     void HandleMessage();
     void Send(int16 code, int8 *data, size_t size);
+    void RestartUDP();
+
+    const bool IsConnected() { return connected; };
 
     VoiceClient *GetVoiceClient();
 
