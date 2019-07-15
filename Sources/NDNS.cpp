@@ -2,6 +2,7 @@
 #include "SDLAudioManager.h"
 #include "VoiceClient.h"
 #include "Settings.h"
+#include "SettingsFields.h"
 
 int main(int, char **)
 {
@@ -34,7 +35,6 @@ void NDNS::Start()
     SDL_Init(SDL_INIT_AUDIO);
     SDL_AudioInit(SDL_GetAudioDriver(0));
     SDLAudioManager::Get().InitProcessors();
-
     ListenInput();
 }
 

@@ -10,6 +10,7 @@
 
 #include "Definitions.h"
 
+
 struct Command
 {
     std::string name;
