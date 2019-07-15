@@ -27,7 +27,6 @@ enum OUTPUT_CODE
 };
 
 class TCPClient;
-class VoiceClient;
 
 class NDNS
 {
@@ -51,7 +50,6 @@ private:
     std::map<char, Command> commands;
 
     std::shared_ptr<TCPClient> direct_c = nullptr;
-    VoiceClient *vc = nullptr;
 
     std::mutex m_input;
     std::queue<std::string> inputStorage;

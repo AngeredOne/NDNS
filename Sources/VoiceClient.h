@@ -28,11 +28,9 @@ public:
     bool Create(uint16 audio_port, uint16 video_port, std::string remote_ip);
 
     void ListenAudio();
-    void ListenChat();
     void ListenMicrophone();
 
     void SendAudio(int16 *samples, size_t len);
-    void SendMessage(std::string msg);
 
     bool inChat = false;
     bool muteIn = false;

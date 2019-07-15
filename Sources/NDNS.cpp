@@ -84,14 +84,17 @@ void NDNS::ListenInput()
                 }
             }
         }
-        else if (direct_c)
-            direct_c->GetVoiceClient()->SendMessage(input);
+        else if (direct_c && direct_c->IsConnected())
+        {
+            input += ">-<";
+            direct_c->Send(11, (int8*)input.data(), input.size());
+        }
     }
 }
 
 ArgsMap *NDNS::ParseCommand(std::string input)
 {
-    ArgsMap* args = new ArgsMap();
+    ArgsMap *args = new ArgsMap();
     try
     {
         auto posx = input.find('-');

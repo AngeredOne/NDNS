@@ -26,9 +26,7 @@ void TCPClient::Create(tcp::endpoint ep, bool isHost, std::string nick)
             //setup local ep + acceptor
             tcp::acceptor *accp = new tcp::acceptor(service, ep);
             TCP_socketptr remote(new tcp::socket(service));
-            NDNS::Get().WriteOutput("Pipa", DEBUG);
             accp->accept(*remote);
-            NDNS::Get().WriteOutput("Pepa", DEBUG);
             with = remote;
             delete accp;
         }
@@ -69,62 +67,6 @@ void TCPClient::Send(int16 code, int8 *data, size_t size)
     }
 }
 
-void TCPClient::HandleMessage()
-{
-    while (connected)
-    {
-        int16 *code_r = new int16;
-        read(*with, buffer(code_r, 2));
-
-        int code = *code_r;
-        switch (code)
-        {
-            //Set conn + nick
-        case 1:
-            if (voiceClient)
-            {
-                auto data = new int8[16];
-                read(*with, buffer(data, 16));
-                voiceClient->Nick = std::string(std::string(data, 16).c_str());
-
-                port_sync *psyna = new port_sync();
-                psyna->a_p = voiceClient->GetVoiceSockets()->voice_socket->local_endpoint().port();
-                psyna->v_p = voiceClient->GetVoiceSockets()->video_socket->local_endpoint().port();
-
-                data = new int8[4];
-                memcpy(data, psyna, 4);
-                Send(02, data, 4);
-            }
-
-            break;
-
-        case 2:
-        {
-            auto data = new int16[2];
-            read(*with, buffer(data, 4));
-
-            auto ports = reinterpret_cast<port_sync *>(data);
-            voiceClient->Create(ports->a_p, ports->v_p, with->remote_endpoint().address().to_string());
-        }
-
-        break;
-
-        case 3:
-        {
-            auto data = new int16[2];
-            read(*with, buffer(data, 4));
-
-            auto ports = reinterpret_cast<port_sync *>(data);
-            if (!voiceClient->IsConnected())
-                voiceClient->Create(ports->a_p, ports->v_p, with->remote_endpoint().address().to_string());
-            else
-                voiceClient->GetVoiceSockets()->RegEP(ports->a_p, ports->v_p, with->remote_endpoint().address().to_string());
-        }
-        break;
-        }
-    }
-}
-
 VoiceClient *TCPClient::GetVoiceClient()
 {
     return voiceClient;
@@ -155,24 +97,6 @@ bool VoiceClient::Create(uint16 a_port, uint16 v_port, std::string rep)
     }
 }
 
-void VoiceClient::ListenChat()
-{
-    // while (is_connected)
-    // {
-    //     std::string message;
-    //     while (message.find("<|-|>") == std::string::npos)
-    //     {
-    //         char *msg = new char[32];
-    //         UDPEndPoint senderEP;
-    //         client_sockets->chat_socket->receive_from(buffer(msg, 32), senderEP);
-    //         message += std::string(std::string(msg, 32).c_str());
-    //         delete msg;
-    //     }
-    //     message = Nick + ": " + message.erase(message.find("<|-|>"), 5);
-    //     NDNS::Get().WriteOutput(message, CHAT);
-    // }
-}
-
 void VoiceClient::ListenAudio()
 {
     while (is_connected)
@@ -198,15 +122,6 @@ void VoiceClient::SendAudio(int16 *data, size_t len)
         }
         delete data;
     }
-}
-
-void VoiceClient::SendMessage(std::string msg)
-{
-    // if (client_sockets->chat_remoteEP && msg != "")
-    // {
-    //     msg += "<|-|>";
-    //     client_sockets->chat_socket->send_to(buffer(msg.data(), msg.size()), *client_sockets->chat_remoteEP);
-    // }
 }
 
 void VoiceClient::ListenMicrophone()

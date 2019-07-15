@@ -2,6 +2,7 @@
 #include "VoiceClient.h"
 #include "Settings.h"
 #include "SDLAudioManager.h"
+#include "SettingsFields.h"
 
 void NDNS::InitCommands()
 {
@@ -37,8 +38,17 @@ void NDNS::Connection_cmd(ArgsMap args)
         }
         else
         {
-            std::string ip = args[" "].front();
-            std::string nick = args[" "].back();
+            std::string ip;
+            std::string nick;
+            if (args.size() == 0) {
+                ip = Settings::Get().GetField(S_LAST_IP)->GetValue();
+                nick = Settings::Get().GetField(S_LAST_NICKNAME)->GetValue();
+            } else {
+                ip = args[" "].front();
+                nick = args[" "].back();
+                Settings::Get().SetField(S_LAST_IP, ip);    
+                Settings::Get().SetField(S_LAST_NICKNAME, nick);
+            }
             tcp::endpoint ep(ip::address::from_string(ip), 25560);
             tcpThread = std::make_shared<std::thread>(&TCPClient::Create, direct_c, ep, false, nick);
         }
@@ -75,42 +85,34 @@ void NDNS::Volume_cmd(ArgsMap args)
 
 void NDNS::Mute_cmd(ArgsMap args)
 {
-    // if (args.find("all") != args.end())
-    // {
-
-    //     direct_c->GetVoiceClient()->muteIn = true;
-    //     direct_c->GetVoiceClient()->muteOut = true;
-    // }
-    // else if (args.find("input") != args.end())
-    // {
-    //     bool mute = atoi(args["input"].front().c_str());
-    //     direct_c->GetVoiceClient()->muteIn = mute;
-    // }
-    // else if (args.find("output") != args.end())
-    // {
-    //     bool mute = atoi(args["output"].front().c_str());
-    //     direct_c->GetVoiceClient()->muteOut = mute;
-    // }
-    if (args.find("all") != args.end())
+    if (direct_c && direct_c->IsConnected())
     {
-
-        vc->muteIn = true;
-        vc->muteOut = true;
-    }
-    else if (args.find("input") != args.end())
-    {
-        bool mute = atoi(args["input"].front().c_str());
-        vc->muteIn = mute;
-    }
-    else if (args.find("output") != args.end())
-    {
-        bool mute = atoi(args["output"].front().c_str());
-        vc->muteOut = mute;
+        if (args.find("all") != args.end())
+        {
+            direct_c->GetVoiceClient()->muteIn = true;
+            direct_c->GetVoiceClient()->muteOut = true;
+        }
+        else if (args.find("input") != args.end())
+        {
+            bool mute = atoi(args["input"].front().c_str());
+            direct_c->GetVoiceClient()->muteIn = mute;
+        }
+        else if (args.find("output") != args.end())
+        {
+            bool mute = atoi(args["output"].front().c_str());
+            direct_c->GetVoiceClient()->muteOut = mute;
+        }
     }
 }
 
-void NDNS::Settings_cmd(ArgsMap args) {
-    if (args.find("save") != args.end()) {
+void NDNS::Settings_cmd(ArgsMap args)
+{
+    if (args.find("save") != args.end())
+    {
         Settings::Get().SaveConfig();
+    }
+    if (args.find("show") != args.end())
+    {
+        Settings::Get().PrintSettings();
     }
 }

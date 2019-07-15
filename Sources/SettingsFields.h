@@ -49,6 +49,15 @@ protected:
     std::string ip = "127.0.0.1";
 };
 
+class LastNickname : public SettingsField {
+public:
+    virtual void ApplyValue(std::string value);
+    virtual std::string GetValue() const;
+protected:
+    std::string user = "user";
+};
+
+
 class Device : public SettingsField {
     public:
     Device(bool _isInput) : isInput(_isInput) {}
