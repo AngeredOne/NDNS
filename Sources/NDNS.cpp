@@ -2,6 +2,7 @@
 #include "SDLAudioManager.h"
 #include "VoiceClient.h"
 #include "Settings.h"
+#include "SettingsFields.h"
 
 int main(int, char **)
 {
@@ -33,7 +34,6 @@ void NDNS::Start()
     SDL_Init(SDL_INIT_AUDIO);
     SDL_AudioInit(SDL_GetAudioDriver(0));
     SDLAudioManager::Get().InitProcessors();
-
     Command connect{"Connection (/c)",
                     "Setup connection \n -host port - setup host for direct connection.\n ip port - setup direct connection to host.",
                     std::bind(&NDNS::Connection_cmd, this, std::placeholders::_1)};
@@ -49,6 +49,7 @@ void NDNS::Start()
                  std::bind(&NDNS::Mute_cmd, this, std::placeholders::_1)};
     commands.insert(std::pair<char, Command>('m', mute));
 
+    Settings::Get().PrintSettings();
     ListenInput();
 }
 
@@ -198,6 +199,7 @@ void NDNS::Connection_cmd(ArgsMap args)
     if (!direct_c)
     {
         direct_c = std::make_shared<TCPClient>();
+        
         if (args.find("host") != args.end())
         {
             int port = atoi(args["host"].front().c_str());
@@ -206,7 +208,13 @@ void NDNS::Connection_cmd(ArgsMap args)
         }
         else
         {
-            std::string ip = args[" "].front();
+            std::string ip;
+            if (args.size() == 0) {
+                ip = Settings::Get().GetField(S_LAST_IP)->GetValue();
+            } else {
+                ip = args[" "].front();
+                Settings::Get().SetField(S_LAST_IP, ip);
+            }
             // int port = atoi(args[" "].back().c_str());
             // tcp::endpoint ep(ip::address::from_string(ip), port);
             // tcpThread = std::make_shared<std::thread>(&TCPClient::Create, direct_c, ep, false);
@@ -219,13 +227,11 @@ void NDNS::Volume_cmd(ArgsMap args)
 {
     if (args.find("input") != args.end())
     {
-        auto perc = atoi(args["input"].front().c_str());
-        Settings::Get().input->SetVolume(perc);
+        Settings::Get().SetField(S_VOLUME_IN, args["input"].front());
     } 
     if (args.find("output") != args.end())
     {
-        auto perc = atoi(args["output"].front().c_str());
-        Settings::Get().output->SetVolume(perc);
+        Settings::Get().SetField(S_VOLUME_OUT, args["output"].front());
     } 
     if (args.find("setup") != args.end())
     {
@@ -233,9 +239,20 @@ void NDNS::Volume_cmd(ArgsMap args)
         SDLAudioManager::Get().InitProcessors();
     } 
     if (args.find("threshold") != args.end()) {
-        auto perc = atoi(args["threshold"].front().c_str());
-        Settings::Get().input->SetThreshold(perc);
+        Settings::Get().SetField(S_THRESHOLD_IN, args["threshold"].front());
     }
+    if (args.find("save") != args.end()) {
+        Settings::Get().SaveConfig();
+    }
+
+    if (args.find("start") != args.end()) {
+        SDLAudioManager::Get().Start();
+    }
+
+    if (args.find("stop") != args.end()) {
+        SDLAudioManager::Get().Stop();
+    }
+    
 }
 
 void NDNS::Mute_cmd(ArgsMap args)

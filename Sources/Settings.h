@@ -1,51 +1,39 @@
 #pragma once
 #include "NDNS.h"
 
+class SettingsField;
 
+const std::string S_VOLUME_IN = "volume-input";
+const std::string S_VOLUME_OUT = "volume-output";
+const std::string S_THRESHOLD_IN = "threshold-input";
+const std::string S_LAST_IP = "last-ip";
+const std::string S_INPUT_DEVICE = "device-input";
+const std::string S_OUTPUT_DEVICE = "device-output";
+const int SOUND_BUF = 1024;
 
-class Loudness {
-    public:
-    Loudness() {}
-    Loudness(float _volume);
-    //VOLUME
-    //Interface
-    void SetVolume(int percentage);
-    int GetVolume() const;
-    constexpr int MaxVolumeValue();
-    //Computations
-    float GetVolumeCoef() const;
-    //THRESHOLD
-    //Interface
-    void SetThreshold(int percentage);
-    int GetThreshold() const;
-    //Computations
-    float GetThresholdCoef() const;
-    private:
-
-    const float MAX_VOLUME = 4.f;
-    const float MIN_VOLUME = 0.01f;
-    int volume = 1;
-
-    const int MAX_THRESHOLD = 100;
-    const int MIN_THRESHOLD = 0;
-    int threshold = 15;
-
-};
 
 class Settings
 {
 public:
-    std::shared_ptr<Loudness> input = std::make_shared<Loudness>(100);
-    std::shared_ptr<Loudness> output = std::make_shared<Loudness>(100);
     static Settings &Get()
     {
         static Settings instance;
         return instance;
     }
     void SetupFromConsole();
+    void LoadConfig();
+    void SaveConfig();
+    void PrintSettings();
+    void SetField(std::string fieldname, std::string value);
+    std::shared_ptr<SettingsField> GetField(std::string fieldname);
+
 private:
+    std::map<std::string, std::shared_ptr<SettingsField>> allfields;
+    const std::string configPath = "ndns.c";
+
     Settings();
     Settings(Settings const &) = delete;
     Settings &operator=(Settings const &) = delete;
-    SDL_AudioSpec config;
+
+    void InitFieldsMap();
 };

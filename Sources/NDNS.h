@@ -18,10 +18,16 @@
 #include <list>
 #include <queue>
 #include <exception>
+#include <fstream>
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem;
+
 
 using namespace boost::asio;
 using namespace boost::asio::ip;
 using boost::asio::ip::tcp;
+
 
 typedef u_int8_t byte;
 typedef std::shared_ptr<std::thread> Thread_ptr;
@@ -42,6 +48,7 @@ typedef std::shared_ptr<UDPSocket> Socket_ptr;
 // Shared_ptr for thread
 typedef std::shared_ptr<std::thread> Thread_ptr;
 typedef std::shared_ptr<tcp::socket> TCP_socketptr;
+
 
 struct Command
 {
