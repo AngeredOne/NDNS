@@ -49,4 +49,11 @@ typedef std::shared_ptr<UDPSocket> Socket_ptr;
 typedef std::shared_ptr<std::thread> Thread_ptr;
 typedef std::shared_ptr<tcp::socket> TCP_socketptr;
 
+struct APPV
+{
+    char *appv = "1.r";
+    char *v_type = "STABLE";
+    char *codename = "OhShitHereWeGoAgain";
+};
+
 #endif // !__DEFS__

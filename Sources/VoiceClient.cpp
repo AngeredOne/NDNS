@@ -32,7 +32,15 @@ void VoiceClient::ListenAudio()
     {
         int16 *bits = new int16[bitrate];
         UDPEndPoint senderEP;
-        client_sockets->voice_socket->receive_from(buffer(bits, bitrate), senderEP);
+        try
+        {
+            boost::system::error_code ec;
+            client_sockets->voice_socket->receive_from(buffer(bits, bitrate), senderEP, 0, ec);
+        }
+        catch (std::exception &e)
+        {
+            std::cout << "";
+        }
         if (!muteOut)
         {
             SDLAudioManager::Get().PlayAudio(bits, bitrate);
@@ -43,13 +51,19 @@ void VoiceClient::ListenAudio()
 
 void VoiceClient::SendAudio(int16 *data, size_t len)
 {
-    if (client_sockets->voice_remoteEP && data)
+    try
     {
-        if (!muteIn)
+        if (client_sockets->voice_remoteEP && data)
         {
-            client_sockets->voice_socket->send_to(buffer(data, len), *client_sockets->voice_remoteEP);
+            if (!muteIn)
+            {
+                client_sockets->voice_socket->send_to(buffer(data, len), *client_sockets->voice_remoteEP);
+            }
+            delete data;
         }
-        delete data;
+    }
+    catch (std::exception &e)
+    {
     }
 }
 
@@ -59,8 +73,15 @@ void VoiceClient::ListenMicrophone()
     while (is_connected)
     {
         int buf = 1024;
-        auto *data = SDLAudioManager::Get().RecordAudio(buf);
-        SendAudio(data, buf * sizeof(decltype(*data)));
+        try
+        {
+            auto *data = SDLAudioManager::Get().RecordAudio(buf);
+            SendAudio(data, buf * sizeof(decltype(*data)));
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
     }
 }
 
@@ -74,4 +95,18 @@ void VoiceSockets::RegEP(uint16 a_port, uint16 v_port, std::string remote_endpoi
 {
     voice_remoteEP = std::make_shared<UDPEndPoint>(ip::address::from_string(remote_endpoint), a_port);
     video_remoteEP = std::make_shared<UDPEndPoint>(ip::address::from_string(remote_endpoint), v_port);
+    voice_socket->connect(*voice_remoteEP);
+    video_socket->connect(*video_remoteEP);
+}
+
+VoiceClient::~VoiceClient()
+{
+    SDLAudioManager::Get().Stop();
+    is_connected = false;
+    voiceThread->detach();
+    microphoneThread->detach();
+    client_sockets->voice_socket->shutdown(udp::socket::shutdown_both);
+    client_sockets->video_socket->shutdown(udp::socket::shutdown_both);
+    client_sockets->voice_socket->close();
+    client_sockets->video_socket->close();
 }

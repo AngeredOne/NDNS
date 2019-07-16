@@ -14,8 +14,6 @@ void SDLAudioManager::InitProcessors() {
 
   controller = Settings::Get().GetField(S_VOLUME_OUT);
   outputProcessors.push_back(std::make_shared<Volume>(std::bind(&VolumeControl::GetVolume, static_cast<VolumeControl*>(controller.get()))));
-
-
   
 }
 
@@ -29,6 +27,7 @@ bool SDLAudioManager::SetupInput(const char *deviceName)
         return false;
     }
     SDL_PauseAudioDevice(input, 1);
+    SDL_ClearQueuedAudio(input);
     return true;
 }
 
@@ -42,6 +41,7 @@ bool SDLAudioManager::SetupOutput(const char *deviceName)
         return false;
     }
     SDL_PauseAudioDevice(output, 1);
+    SDL_ClearQueuedAudio(output);
     return true;
 }
 
@@ -78,6 +78,7 @@ void SDLAudioManager::Start() {
 }
 
 void SDLAudioManager::Stop() {
+    
     SDL_PauseAudioDevice(output, 1);
     SDL_PauseAudioDevice(input, 1);
 }

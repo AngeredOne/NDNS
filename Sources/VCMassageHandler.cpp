@@ -1,5 +1,6 @@
 #include "VoiceClient.h"
 #include "NDNS.h"
+#include "SDLAudioManager.h"
 
 void TCPClient::HandleMessage()
 {
@@ -46,7 +47,7 @@ void TCPClient::HandleMessage()
                     delete msg;
                 }
 
-                message = voiceClient->Nick + ": " + message.erase(message.find(">-<"), 3);
+                message = nick + ": " + message.erase(message.find(">-<"), 3);
                 NDNS::Get().WriteOutput(message, CHAT);
                 message = "";
             }
@@ -56,8 +57,10 @@ void TCPClient::HandleMessage()
         catch (std::exception &e)
         {
             NDNS::Get().WriteOutput("Client disconnected!", SERVER);
+
             connected = false;
-            
+            voiceClient = nullptr;
+
             break;
         }
     }

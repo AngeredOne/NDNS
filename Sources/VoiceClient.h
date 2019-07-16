@@ -36,20 +36,20 @@ public:
     bool muteIn = false;
     bool muteOut = false;
 
-    std::string Nick = "noname";
-
     const std::shared_ptr<VoiceSockets> GetVoiceSockets() { return client_sockets; };
     const bool IsConnected() { return is_connected; };
 
-private:
-    std::shared_ptr<VoiceSockets> client_sockets = nullptr;
+    ~VoiceClient();
 
-    Thread_ptr chatThread;
+private:
+
+    std::shared_ptr<VoiceSockets> client_sockets = nullptr;
     Thread_ptr voiceThread;
     Thread_ptr microphoneThread;
     std::string rep_str;
 
     bool is_connected = false;
+
     int bitrate = 1024;
     int port = 25565;
 };
@@ -59,22 +59,23 @@ class TCPClient
 
 public:
     TCPClient(std::string nick) : nick(nick){};
+
     void Connect(std::string ip);
     void Host();
+
     void HandleMessage();
     void Send(int16 code, int8 *data, size_t size);
-    void RestartUDP();
 
     void WaitSocket();
 
     const bool IsConnected() { return connected; };
 
-    VoiceClient *GetVoiceClient();
+    std::shared_ptr<VoiceClient> GetVoiceClient();
 
 private:
     io_service service;
     bool connected;
     TCP_socketptr with;
-    VoiceClient *voiceClient = nullptr;
+    std::shared_ptr<VoiceClient> voiceClient = nullptr;
     std::string nick;
 };

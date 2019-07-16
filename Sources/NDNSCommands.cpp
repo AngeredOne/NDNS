@@ -69,7 +69,7 @@ void NDNS::Connection_cmd(ArgsMap args)
                 Settings::Get().SetField(S_LAST_IP, ip);
                 Settings::Get().SetField(S_LAST_NICKNAME, nick);
             }
-            
+
             direct_c = std::make_shared<TCPClient>(nick);
             tcpThread = std::make_shared<std::thread>(&TCPClient::Connect, direct_c, ip);
         }
@@ -94,14 +94,6 @@ void NDNS::Volume_cmd(ArgsMap args)
     {
         Settings::Get().SetField(S_THRESHOLD_IN, args["threshold"].front());
     }
-    if (args.find("start") != args.end())
-    {
-        SDLAudioManager::Get().Start();
-    }
-    if (args.find("stop") != args.end())
-    {
-        SDLAudioManager::Get().Stop();
-    }
 }
 
 void NDNS::Mute_cmd(ArgsMap args)
@@ -115,13 +107,29 @@ void NDNS::Mute_cmd(ArgsMap args)
         }
         else if (args.find("input") != args.end())
         {
-            bool mute = atoi(args["input"].front().c_str());
-            direct_c->GetVoiceClient()->muteIn = mute;
+            auto mute = &direct_c->GetVoiceClient()->muteIn;
+            *mute = !*mute;
+            if (*mute)
+            {
+                WriteOutput("Microphone are muted!", SERVER);
+            }
+            else
+            {
+                WriteOutput("Microphone are unmuted!", SERVER);
+            }
         }
         else if (args.find("output") != args.end())
         {
-            bool mute = atoi(args["output"].front().c_str());
-            direct_c->GetVoiceClient()->muteOut = mute;
+            auto mute = &direct_c->GetVoiceClient()->muteOut;
+            *mute = !*mute;
+            if (*mute)
+            {
+                WriteOutput("Output are muted!", SERVER);
+            }
+            else
+            {
+                WriteOutput("Output are unmuted!", SERVER);
+            }
         }
     }
 }

@@ -30,6 +30,14 @@ void NDNS::Start()
 
     WriteOutput(greeting.str(), 0);
 
+    std::stringstream appv;
+    appv << "APPLICATION INFO: \n"
+         << "Version: " << app_ver.appv << "\n"
+         << "Type: " << app_ver.v_type << "\n"
+         << "Codename: " << app_ver.codename << "\n\n";
+
+    WriteOutput(appv.str(), 0);
+
     InitCommands();
 
     SDL_Init(SDL_INIT_AUDIO);

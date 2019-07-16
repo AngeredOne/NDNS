@@ -1,22 +1,6 @@
 #include "VoiceClient.h"
 #include "NDNS.h"
 
-void TCPClient::RestartUDP()
-{
-    std::string nick = voiceClient->Nick;
-    delete voiceClient;
-    voiceClient = new VoiceClient();
-    voiceClient->Nick = nick;
-    port_sync *psyna = new port_sync();
-    psyna->a_p = voiceClient->GetVoiceSockets()->voice_socket->local_endpoint().port();
-    psyna->v_p = voiceClient->GetVoiceSockets()->video_socket->local_endpoint().port();
-
-    auto data = new int8[4];
-    memcpy(data, psyna, 4);
-    Send(03, data, 4);
-    delete data;
-}
-
 void TCPClient::WaitSocket()
 {
     //setup local ep + acceptor
@@ -30,10 +14,7 @@ void TCPClient::Host()
     with = remote;
     delete accp;
 
-    if (voiceClient)
-        delete voiceClient;
-
-    voiceClient = new VoiceClient();
+    voiceClient = std::make_shared<VoiceClient>();
     connected = true;
 
     Send(1, (int8 *)nick.data(), 16);
@@ -46,6 +27,8 @@ void TCPClient::Host()
     memcpy(data, psyna, 4);
     Send(02, data, 4);
 
+    NDNS::Get().WriteOutput("Connection established!\nChat:\n", SERVER);
+
     HandleMessage();
 }
 
@@ -57,10 +40,7 @@ void TCPClient::Connect(std::string ip)
         with = TCP_socketptr(new tcp::socket(service));
         with->connect(tcp::endpoint(ip::address::from_string(ip), 25560));
 
-        if (voiceClient)
-            delete voiceClient;
-            
-        voiceClient = new VoiceClient();
+        voiceClient = std::make_shared<VoiceClient>();
         connected = true;
 
         //Send "hello!"
@@ -99,7 +79,7 @@ void TCPClient::Send(int16 code, int8 *data, size_t size)
     }
 }
 
-VoiceClient *TCPClient::GetVoiceClient()
+std::shared_ptr<VoiceClient> TCPClient::GetVoiceClient()
 {
     return voiceClient;
 }
