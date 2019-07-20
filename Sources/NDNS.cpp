@@ -1,6 +1,6 @@
 #include "NDNS.h"
 #include "SDLAudioManager.h"
-#include "VoiceClient.h"
+#include "DirectConn.h"
 #include "Settings.h"
 #include "SettingsFields.h"
 
@@ -43,6 +43,8 @@ void NDNS::Start()
     SDL_Init(SDL_INIT_AUDIO);
     SDL_AudioInit(SDL_GetAudioDriver(0));
     SDLAudioManager::Get().InitProcessors();
+    DirectConn::Get();
+
     ListenInput();
 }
 
@@ -62,7 +64,6 @@ void NDNS::WriteOutput(std::string output, int8 code)
     case DEBUG:
         std::cout << "DEBUG:\n\033[1;37m" << output << "\033[0m\n";
         break;
-
     default:
         std::cout << output;
         break;
@@ -92,10 +93,10 @@ void NDNS::ListenInput()
                 }
             }
         }
-        else if (direct_c && direct_c->IsConnected())
+        else
         {
-            input += ">-<";
-            direct_c->Send(11, (int8*)input.data(), input.size());
+            input = Settings::Get().GetField(S_LAST_NICKNAME)->GetValue() + input + ">-<";
+            DirectConn::Get().Send(OPCODE::CHATMSG, input.data(), input.size());
         }
     }
 }

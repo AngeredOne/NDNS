@@ -3,6 +3,9 @@
 
 class AbstractSoundProcessor;
 
+
+const int AUDIO_BUF = 1024;
+
 class SDLAudioManager
 {
 public:
@@ -19,21 +22,13 @@ public:
     bool SetupInput(const char *deviceName);
     bool SetupOutput(const char *deviceName);
 
-    Sint16 *RecordAudio(int len);
-    void PlayAudio(Sint16 *data, int len);
+    Sint16 *RecordAudio();
+    void PlayAudio(Sint16 *data);
 
 private:
     SDLAudioManager(SDLAudioManager const &) = delete;
     SDLAudioManager &operator=(SDLAudioManager const &) = delete;
-    SDLAudioManager()
-    {
-        SDL_zero(AUDIO_SPEC);
-        AUDIO_SPEC.freq = 44100;
-        AUDIO_SPEC.format = AUDIO_S16;
-        AUDIO_SPEC.channels = 1;
-        AUDIO_SPEC.samples = 1024;
-        AUDIO_SPEC.callback = nullptr;
-    }
+    SDLAudioManager();
 
     ~SDLAudioManager()
     {

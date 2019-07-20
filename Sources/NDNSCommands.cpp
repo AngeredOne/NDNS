@@ -1,5 +1,5 @@
 #include "NDNS.h"
-#include "VoiceClient.h"
+#include "DirectConn.h"
 #include "Settings.h"
 #include "SDLAudioManager.h"
 #include "SettingsFields.h"
@@ -27,53 +27,22 @@ void NDNS::InitCommands()
 
 void NDNS::Connection_cmd(ArgsMap args)
 {
-    if (!direct_c || !direct_c->IsConnected())
+    static std::regex ipFormat("\\d{1,3}(\\.\\d{1,3}){3}");
+    if (args.size() > 0)
     {
-        if (tcpThread)
+        std::string ip = args[" "].front();
+        if (std::regex_match(ip, ipFormat))
         {
-            tcpThread->detach();
-            tcpThread = nullptr;
-        }
-
-        if (args.find("host") != args.end())
-        {
-            std::string nick;
-
-            if (args.size() == 0)
-            {
-                nick = Settings::Get().GetField(S_LAST_NICKNAME)->GetValue();
-            }
-            else
-            {
-                nick = args["host"].front();
-                Settings::Get().SetField(S_LAST_NICKNAME, nick);
-            }
-
-            direct_c = std::make_shared<TCPClient>(nick);
-
-            tcpThread = std::make_shared<std::thread>(&TCPClient::Host, direct_c);
+            Settings::Get().SetField(S_LAST_IP, ip);
         }
         else
         {
-            std::string ip;
-            std::string nick;
-            if (args.size() == 0)
-            {
-                ip = Settings::Get().GetField(S_LAST_IP)->GetValue();
-                nick = Settings::Get().GetField(S_LAST_NICKNAME)->GetValue();
-            }
-            else
-            {
-                ip = args[" "].front();
-                nick = args[" "].back();
-                Settings::Get().SetField(S_LAST_IP, ip);
-                Settings::Get().SetField(S_LAST_NICKNAME, nick);
-            }
-
-            direct_c = std::make_shared<TCPClient>(nick);
-            tcpThread = std::make_shared<std::thread>(&TCPClient::Connect, direct_c, ip);
+            WriteOutput("Uncorrect format of IP address. Must be like 127.0.0.1", ERROR);
         }
     }
+    std::string ip = Settings::Get().GetField(S_LAST_IP)->GetValue();
+    WriteOutput("Connecting to " + ip, SERVER);
+    DirectConn::Get().Connect(ip);
 }
 
 void NDNS::Volume_cmd(ArgsMap args)
@@ -98,39 +67,18 @@ void NDNS::Volume_cmd(ArgsMap args)
 
 void NDNS::Mute_cmd(ArgsMap args)
 {
-    if (direct_c && direct_c->IsConnected())
+    if (args.find("all") != args.end())
     {
-        if (args.find("all") != args.end())
-        {
-            direct_c->GetVoiceClient()->muteIn = true;
-            direct_c->GetVoiceClient()->muteOut = true;
-        }
-        else if (args.find("input") != args.end())
-        {
-            auto mute = &direct_c->GetVoiceClient()->muteIn;
-            *mute = !*mute;
-            if (*mute)
-            {
-                WriteOutput("Microphone are muted!", SERVER);
-            }
-            else
-            {
-                WriteOutput("Microphone are unmuted!", SERVER);
-            }
-        }
-        else if (args.find("output") != args.end())
-        {
-            auto mute = &direct_c->GetVoiceClient()->muteOut;
-            *mute = !*mute;
-            if (*mute)
-            {
-                WriteOutput("Output are muted!", SERVER);
-            }
-            else
-            {
-                WriteOutput("Output are unmuted!", SERVER);
-            }
-        }
+        DirectConn::Get().MuteInput();
+        DirectConn::Get().MuteOutput();
+    }
+    else if (args.find("input") != args.end())
+    {
+        DirectConn::Get().MuteInput();
+    }
+    else if (args.find("output") != args.end())
+    {
+        DirectConn::Get().MuteOutput();
     }
 }
 

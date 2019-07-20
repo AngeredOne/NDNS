@@ -10,7 +10,6 @@
 
 #include "Definitions.h"
 
-
 struct Command
 {
     std::string name;
@@ -49,15 +48,11 @@ private:
     //Settings settings;
     std::map<char, Command> commands;
 
-    std::shared_ptr<TCPClient> direct_c = nullptr;
-
     std::mutex m_input;
     std::queue<std::string> inputStorage;
 
     void ListenInput();
     ArgsMap *ParseCommand(std::string input);
-
-    Thread_ptr tcpThread = nullptr;
 
     void Connection_cmd(ArgsMap args);
     void Volume_cmd(ArgsMap args);

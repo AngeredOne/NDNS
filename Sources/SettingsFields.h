@@ -16,7 +16,6 @@ class VolumeControl : public SettingsField
 public:
     virtual void ApplyValue(std::string value);
     virtual std::string GetValue() const;
-
     float GetVolume() const;
 
 protected:

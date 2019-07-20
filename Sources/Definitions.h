@@ -15,6 +15,7 @@
 #include <exception>
 #include <fstream>
 #include <experimental/filesystem>
+#include <regex>
 
 namespace fs = std::experimental::filesystem;
 
@@ -44,7 +45,7 @@ typedef ip::udp::socket UDPSocket;
 // Boost::asio network in\out stream
 typedef io_service nios;
 // Shared_ptr for UDPSocket
-typedef std::shared_ptr<UDPSocket> Socket_ptr;
+typedef std::shared_ptr<UDPSocket> UDP_socketptr;
 // Shared_ptr for thread
 typedef std::shared_ptr<std::thread> Thread_ptr;
 typedef std::shared_ptr<tcp::socket> TCP_socketptr;
