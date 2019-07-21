@@ -92,10 +92,14 @@ void NDNS::ListenInput()
                     WriteOutput(e.what(), ERROR);
                 }
             }
+            else
+            {
+                WriteOutput("Unrecognized command. Type /? to get all commands.", SERVER);
+            }
         }
         else
         {
-            input = Settings::Get().GetField(S_LAST_NICKNAME)->GetValue() + input + ">-<";
+            input = Settings::Get().GetField(S_LAST_NICKNAME)->GetValue() + ": " + input + ">-<";
             DirectConn::Get().Send(OPCODE::CHATMSG, input.data(), input.size());
         }
     }

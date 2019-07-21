@@ -13,7 +13,7 @@ void DirectConn::SyncPorts()
     auto remoteip = s_remote->remote_endpoint().address();
 
     s_voice->connect(udp::endpoint(remoteip, ps.a_p));
-    s_voice->connect(udp::endpoint(remoteip, ps.a_p));
+    s_trans->connect(udp::endpoint(remoteip, ps.v_p));
 
     StartVoice();
 }

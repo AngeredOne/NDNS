@@ -54,6 +54,7 @@ private:
     void ListenInput();
     ArgsMap *ParseCommand(std::string input);
 
+    void Help_cmd(ArgsMap map);
     void Connection_cmd(ArgsMap args);
     void Volume_cmd(ArgsMap args);
     void Mute_cmd(ArgsMap args);

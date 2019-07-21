@@ -2,13 +2,14 @@
 #include "Settings.h"
 #include "SettingsFields.h"
 #include "SDLAudioManager.h"
+#include <chrono>
 
 DirectConn::DirectConn()
 {
     handlers.insert(P_HandlerDirect(1, std::bind(&DirectConn::SyncData, this)));
     handlers.insert(P_HandlerDirect(2, std::bind(&DirectConn::SyncPorts, this)));
     handlers.insert(P_HandlerDirect(3, std::bind(&DirectConn::SyncBitrate, this)));
-    handlers.insert(P_HandlerDirect(11, std::bind(&DirectConn::ChatMessage, this)));
+    handlers.insert(P_HandlerDirect(6, std::bind(&DirectConn::ChatMessage, this)));
 
     connThread = Thread_ptr(new std::thread(&DirectConn::WaitConnection, this));
     connThread->detach();
@@ -24,16 +25,27 @@ void DirectConn::WaitConnection()
 {
     try
     {
-        acceptor = new tcp::acceptor(tcp_service, tcp::endpoint(tcp::v4(), 25560));
+        acceptor = std::make_shared<tcp::acceptor>(tcp_service, tcp::endpoint(tcp::v4(), 25560));
         s_remote = TCP_socketptr(new tcp::socket(tcp_service));
+
+        NDNS::Get().WriteOutput("Host started.", SERVER);
+
         acceptor->accept(*s_remote);
         state = CONNECTED;
-        Setup();
+    }
+    catch (const boost::system::system_error &e)
+    {
+        NDNS::Get().WriteOutput("Host cannot be started: host endpoint(0.0.0.0:25560) is closed.", SERVER);
+        return;
     }
     catch (const std::exception &e)
     {
-        NDNS::Get().WriteOutput(std::string("Waiter(host) shutting down.\nReason: ") + e.what(), SERVER);
+        NDNS::Get().WriteOutput(std::string("Host shutting down.\nReason: ") + e.what(), SERVER);
+        NDNS::Get().WriteOutput("Restarting host.", SERVER);
+        WaitConnection();
     }
+
+    Setup();
 }
 
 void DirectConn::Connect(std::string rem)
@@ -94,18 +106,16 @@ void DirectConn::HandleConnection()
         catch (std::exception &e)
         {
             NDNS::Get().WriteOutput("TCP connection dropped.", SERVER);
+            state = ESTABLISHED;
             break;
         }
     }
 
     Reset();
-    NDNS::Get().WriteOutput("TCP restarted.", SERVER);
 }
 
 void DirectConn::Reset()
 {
-    auto o_state = state;
-    state = ESTABLISHED;
 
     SDLAudioManager::Get().Stop();
 
@@ -120,7 +130,7 @@ void DirectConn::Reset()
     translationWriter = nullptr;
     translationListener = nullptr;
 
-    if (o_state == MESSAGING)
+    if (state == MESSAGING)
     {
         NDNS::Get().WriteOutput("\nRestarting UDP...", SERVER);
         Setup();
@@ -128,7 +138,11 @@ void DirectConn::Reset()
     }
     else
     {
+        s_remote = nullptr;
+        acceptor = nullptr;
+
         state = WAITING;
+
         connThread = Thread_ptr(new std::thread(&DirectConn::WaitConnection, this));
         connThread->detach();
     }
@@ -150,6 +164,8 @@ void DirectConn::RecordVoice()
             }
 
             delete data;
+
+            std::this_thread::sleep_for(chrono::milliseconds(10));
         }
         catch (const std::exception &e)
         {

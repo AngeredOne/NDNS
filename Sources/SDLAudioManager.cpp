@@ -55,7 +55,8 @@ bool SDLAudioManager::SetupOutput(const char *deviceName)
 Sint16 *SDLAudioManager::RecordAudio()
 {
     Sint16 *data = new Sint16[AUDIO_BUF];
-    auto size = SDL_DequeueAudio(input, data, AUDIO_BUF * 2);
+    auto size = SDL_DequeueAudio(input, data, AUDIO_BUF);
+
     if (size == 0)
         return nullptr;
     for (auto processor : inputProcessors)
@@ -88,7 +89,6 @@ void SDLAudioManager::Start()
 
 void SDLAudioManager::Stop()
 {
-
     SDL_PauseAudioDevice(output, 1);
     SDL_PauseAudioDevice(input, 1);
 }

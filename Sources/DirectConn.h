@@ -36,7 +36,7 @@ public:
     template <typename T>
     void Send(uint8 code, T *data, size_t length)
     {
-        if (state == CONNECTED && s_remote != nullptr && data != nullptr)
+        if (state & (CONNECTED | ESTABLISHED | MESSAGING) && s_remote != nullptr && data != nullptr)
         {
             int8 *raw_data = new int8[length + 1];
 
@@ -56,7 +56,7 @@ private:
     DirectConn(const DirectConn &) = delete;
     DirectConn operator=(const DirectConn &) = delete;
 
-    tcp::acceptor* acceptor;
+    std::shared_ptr<tcp::acceptor> acceptor = nullptr;
     io_service tcp_service;
     io_service udp_service;
 
