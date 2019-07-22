@@ -119,11 +119,17 @@ void DirectConn::Reset()
 
     SDLAudioManager::Get().Stop();
 
-    s_voice->shutdown(s_voice->shutdown_both);
-    s_voice->close();
+    try
+    {
+        s_voice->shutdown(s_voice->shutdown_both);
+        s_voice->close();
 
-    s_trans->shutdown(s_trans->shutdown_both);
-    s_trans->close();
+        s_trans->shutdown(s_trans->shutdown_both);
+        s_trans->close();
+    }
+    catch (std::exception &e)
+    {
+    }
 
     voiceWriter = nullptr;
     voiceListener = nullptr;

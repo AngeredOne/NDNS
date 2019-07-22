@@ -67,13 +67,11 @@ void NDNS::Volume_cmd(ArgsMap args)
 {
     if (args.find("input") != args.end())
     {
-        Settings::Get().SetField(S_INPUT_DEVICE, args["input"].front());
-        Settings::Get().GetField(S_INPUT_DEVICE)->ApplyValue(args["input"].front());
+        Settings::Get().SetField(S_VOLUME_IN, args["input"].front());
     }
     if (args.find("output") != args.end())
     {
-        Settings::Get().SetField(S_OUTPUT_DEVICE, args["output"].front());
-        Settings::Get().GetField(S_OUTPUT_DEVICE)->ApplyValue(args["output"].front());
+        Settings::Get().SetField(S_VOLUME_OUT, args["output"].front());
     }
     if (args.find("setup") != args.end())
     {
