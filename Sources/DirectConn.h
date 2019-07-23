@@ -61,6 +61,7 @@ private:
     io_service udp_service;
 
     void WaitConnection();
+    void AcceptedSocket(const boost::system::error_code &error);
     void HandleConnection();
 
     void Setup();

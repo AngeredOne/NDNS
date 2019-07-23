@@ -2,6 +2,7 @@
 #include "Settings.h"
 #include "SettingsFields.h"
 #include "SDLAudioManager.h"
+#include "boost/bind.hpp"
 #include <chrono>
 
 DirectConn::DirectConn()
@@ -29,30 +30,39 @@ void DirectConn::WaitConnection()
         s_remote = TCP_socketptr(new tcp::socket(tcp_service));
 
         NDNS::Get().WriteOutput("Host started.", SERVER);
-
-        acceptor->accept(*s_remote);
-        state = CONNECTED;
+        acceptor->async_accept(*s_remote, boost::bind(&DirectConn::AcceptedSocket, this, boost::placeholders::_1));
+        tcp_service.run_one();
+        tcp_service.restart();
     }
     catch (const boost::system::system_error &e)
     {
         NDNS::Get().WriteOutput("Host cannot be started: host endpoint(0.0.0.0:25560) is closed.", SERVER);
         return;
     }
-    catch (const std::exception &e)
-    {
-        NDNS::Get().WriteOutput(std::string("Host shutting down.\nReason: ") + e.what(), SERVER);
-        NDNS::Get().WriteOutput("Restarting host.", SERVER);
-        WaitConnection();
-    }
+}
 
-    Setup();
+void DirectConn::AcceptedSocket(const boost::system::error_code &error)
+{
+    if (!error)
+    {
+        NDNS::Get().WriteOutput("Connected!", SERVER);
+        state = CONNECTED;  
+        Setup();
+    }
+    else
+    {
+        NDNS::Get().WriteOutput("Cannot accept socket.\nReason: " + error.message(), SERVER);
+    }
 }
 
 void DirectConn::Connect(std::string rem)
 {
     if (state == WAITING)
     {
-        connThread = nullptr; // TODO закрыть ожидание подключения.
+        
+        acceptor->close();
+        acceptor = nullptr;
+        connThread = nullptr;
 
         s_remote = TCP_socketptr(new tcp::socket(tcp_service));
         s_remote->connect(tcp::endpoint(ip::address::from_string(rem), 25560));
@@ -78,7 +88,7 @@ void DirectConn::Setup()
 
     Send(SYNC_UDP_PORT, psyn.get(), 4);
 
-    if (state != ESTABLISHED)
+    if (state <= CONNECTED)
         HandleConnection();
 }
 
@@ -144,13 +154,16 @@ void DirectConn::Reset()
     }
     else
     {
-        s_remote = nullptr;
-        acceptor = nullptr;
+        if (state != WAITING)
+        {
+            state = WAITING;
 
-        state = WAITING;
+            s_remote = nullptr;
+            acceptor = nullptr;
 
-        connThread = Thread_ptr(new std::thread(&DirectConn::WaitConnection, this));
-        connThread->detach();
+            connThread = Thread_ptr(new std::thread(&DirectConn::WaitConnection, this));
+            connThread->detach();
+        }
     }
 }
 
