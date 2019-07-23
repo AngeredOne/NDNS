@@ -3,7 +3,8 @@
 #include "Settings.h"
 #include "SettingsFields.h"
 
-SDLAudioManager::SDLAudioManager() {
+SDLAudioManager::SDLAudioManager()
+{
     SDL_zero(AUDIO_SPEC);
     AUDIO_SPEC.freq = 48000;
     AUDIO_SPEC.format = AUDIO_S16;
@@ -57,6 +58,11 @@ Sint16 *SDLAudioManager::RecordAudio()
     Sint16 *data = new Sint16[AUDIO_BUF];
     auto size = SDL_DequeueAudio(input, data, AUDIO_BUF);
 
+    if (SDL_GetQueuedAudioSize(input) > AUDIO_BUF * 4)
+    {
+        SDL_ClearQueuedAudio(input);
+    }
+
     if (size == 0)
         return nullptr;
     for (auto processor : inputProcessors)
@@ -68,14 +74,19 @@ Sint16 *SDLAudioManager::RecordAudio()
 
 void SDLAudioManager::PlayAudio(Sint16 *data)
 {
-
     if (data != NULL)
     {
         for (auto processor : outputProcessors)
         {
             processor->ProcessSound(data, AUDIO_BUF);
         }
-        auto count = SDL_QueueAudio(output, data, AUDIO_BUF);
+
+        if (SDL_GetQueuedAudioSize(output) > AUDIO_BUF * 4)
+        {
+            SDL_ClearQueuedAudio(output);
+        }
+
+        SDL_QueueAudio(output, data, AUDIO_BUF);
     }
 }
 

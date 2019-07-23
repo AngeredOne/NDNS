@@ -46,10 +46,10 @@ void DirectConn::AcceptedSocket(const boost::system::error_code &error)
     if (!error)
     {
         NDNS::Get().WriteOutput("Connected!", SERVER);
-        state = CONNECTED;  
+        state = CONNECTED;
         Setup();
     }
-    else
+    else if (error != boost::asio::error::operation_aborted)
     {
         NDNS::Get().WriteOutput("Cannot accept socket.\nReason: " + error.message(), SERVER);
     }
@@ -59,14 +59,15 @@ void DirectConn::Connect(std::string rem)
 {
     if (state == WAITING)
     {
-        
+
         acceptor->close();
         acceptor = nullptr;
         connThread = nullptr;
 
         s_remote = TCP_socketptr(new tcp::socket(tcp_service));
         s_remote->connect(tcp::endpoint(ip::address::from_string(rem), 25560));
-
+        
+        NDNS::Get().WriteOutput("Connected!", SERVER);
         state = CONNECTED;
 
         connThread = Thread_ptr(new std::thread(&DirectConn::Setup, this));
@@ -88,7 +89,7 @@ void DirectConn::Setup()
 
     Send(SYNC_UDP_PORT, psyn.get(), 4);
 
-    if (state <= CONNECTED)
+    if (state == CONNECTED)
         HandleConnection();
 }
 
