@@ -59,14 +59,23 @@ void DirectConn::Connect(std::string rem)
 {
     if (state == WAITING)
     {
+        if (acceptor)
+        {
+            // В случае локального дебага на стороне клиента хост не будет запущен и локальное соединение можно будет установить. Иначе - смерть.
+            if (rem == "127.0.0.1")
+            {
+                NDNS::Get().WriteOutput("Cannot establish connection to local host instance. Start other instance of NDNS and try connect.", SERVER);
+                return;
+            }
 
-        acceptor->close();
-        acceptor = nullptr;
+            acceptor->close();
+            acceptor = nullptr;
+        }
         connThread = nullptr;
 
         s_remote = TCP_socketptr(new tcp::socket(tcp_service));
         s_remote->connect(tcp::endpoint(ip::address::from_string(rem), 25560));
-        
+
         NDNS::Get().WriteOutput("Connected!", SERVER);
         state = CONNECTED;
 
@@ -149,9 +158,9 @@ void DirectConn::Reset()
 
     if (state == MESSAGING)
     {
-        NDNS::Get().WriteOutput("\nRestarting UDP...", SERVER);
+        NDNS::Get().WriteOutput("Restarting UDP...", SERVER);
         Setup();
-        NDNS::Get().WriteOutput("\nUDP restarted.", SERVER);
+        NDNS::Get().WriteOutput("UDP restarted.", SERVER);
     }
     else
     {
