@@ -16,6 +16,7 @@
 #include <fstream>
 #include <experimental/filesystem>
 #include <regex>
+#include <ncurses.h>
 
 namespace fs = std::experimental::filesystem;
 
@@ -50,11 +51,18 @@ typedef std::shared_ptr<UDPSocket> UDP_socketptr;
 typedef std::shared_ptr<std::thread> Thread_ptr;
 typedef std::shared_ptr<tcp::socket> TCP_socketptr;
 
+typedef std::shared_ptr<WINDOW> UIWindow_ptr;
+
 struct APPV
 {
     char *appv = "1.r";
     char *v_type = "STABLE";
     char *codename = "OhShitHereWeGoAgain";
 };
+
+#define ERROR_COLOR 1
+#define SERVER_COLOR 2
+#define CHAT_COLOR 3
+#define DEBUG_COLOR 4
 
 #endif // !__DEFS__

@@ -39,6 +39,10 @@ public:
     std::list<std::string> Split(std::string input, std::string split, bool inversive = false);
     std::string Reverse(std::string input);
 
+    UIWindow_ptr settingsWindow;
+    UIWindow_ptr globalWindow;
+    UIWindow_ptr inputWindow;
+
 private:
     NDNS();
     NDNS(const NDNS &) = delete;

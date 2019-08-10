@@ -64,7 +64,7 @@ void DirectConn::Connect(std::string rem)
             // В случае локального дебага на стороне клиента хост не будет запущен и локальное соединение можно будет установить. Иначе - смерть.
             if (rem == "127.0.0.1")
             {
-                NDNS::Get().WriteOutput("Cannot establish connection to local host instance. Start other instance of NDNS and try connect.", SERVER);
+                NDNS::Get().WriteOutput("Cannot establish connection to local host instance. Start other instance of NDNS and try connect.", ERROR);
                 return;
             }
 
@@ -73,15 +73,27 @@ void DirectConn::Connect(std::string rem)
         }
         connThread = nullptr;
 
-        s_remote = TCP_socketptr(new tcp::socket(tcp_service));
-        s_remote->connect(tcp::endpoint(ip::address::from_string(rem), 25560));
+        try
+        {
+            s_remote = TCP_socketptr(new tcp::socket(tcp_service));
+            s_remote->connect(tcp::endpoint(ip::address::from_string(rem), 25560));
 
-        NDNS::Get().WriteOutput("Connected!", SERVER);
-        state = CONNECTED;
+            NDNS::Get().WriteOutput("Connected!", SERVER);
+            state = CONNECTED;
 
-        connThread = Thread_ptr(new std::thread(&DirectConn::Setup, this));
-        connThread->detach();
+            connThread = Thread_ptr(new std::thread(&DirectConn::Setup, this));
+            connThread->detach();
+        }
+        catch (const std::exception &e)
+        {
+            NDNS::Get().WriteOutput(std::string("Cannot connect to remote host.\nReason: ") + e.what(), ERROR);
+        }
     }
+    else
+    {
+        NDNS::Get().WriteOutput("Connection already established.", ERROR);
+    }
+    
 }
 
 void DirectConn::Setup()
@@ -194,7 +206,7 @@ void DirectConn::RecordVoice()
 
             delete data;
 
-            std::this_thread::sleep_for(chrono::milliseconds(10));
+            std::this_thread::sleep_for(chrono::milliseconds(20));
         }
         catch (const std::exception &e)
         {
@@ -219,6 +231,10 @@ void DirectConn::ListenVoice()
                 SDLAudioManager::Get().PlayAudio(samples);
 
             delete samples;
+
+            
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
         catch (const std::exception &e)
         {

@@ -56,6 +56,7 @@ void NDNS::Connection_cmd(ArgsMap args)
         else
         {
             WriteOutput("Uncorrect format of IP address. Must be like 127.0.0.1", ERROR);
+            return;
         }
     }
     std::string ip = Settings::Get().GetField(S_LAST_IP)->GetValue();
