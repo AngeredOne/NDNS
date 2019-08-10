@@ -44,7 +44,7 @@ public:
             memcpy(&raw_data[1], data, length);
 
             s_remote->write_some(buffer(raw_data, length + 1));
-            delete raw_data;
+            delete[] raw_data;
         }
     };
 
