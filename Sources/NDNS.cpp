@@ -48,7 +48,8 @@ void NDNS::Start()
     appv << "APPLICATION INFO: \n"
          << "Version: " << app_ver.appv << "\n"
          << "Type: " << app_ver.v_type << "\n"
-         << "Codename: " << app_ver.codename << "\n\n";
+         << "Codename: " << app_ver.codename << "\n"
+         << "Date: " << __DATE__ << " at " << __TIME__ << "\n\n";
 
     WriteOutput(appv.str(), 0);
 
@@ -96,20 +97,26 @@ void NDNS::WriteOutput(std::string output, int8 code)
     wrefresh(globalWindow.get());
 }
 
+std::string NDNS::GetInput()
+{
+    std::string input;
+    char input_raw[256];
+
+    wgetstr(inputWindow.get(), input_raw);
+    wclear(inputWindow.get());
+    wrefresh(inputWindow.get());
+
+    if (input_raw)
+        input = std::string(input_raw);
+
+    return input;
+}
+
 void NDNS::ListenInput()
 {
-    curs_set(0);
     while (true)
     {
-        std::string input;
-        char input_raw[256];
-
-        wgetstr(inputWindow.get(), input_raw);
-        wclear(inputWindow.get());
-        wrefresh(inputWindow.get());
-
-        if (input_raw)
-            input = std::string(input_raw);
+        std::string input = GetInput();
 
         if (input[0] == '/')
         {
@@ -185,19 +192,6 @@ ArgsMap *NDNS::ParseCommand(std::string input)
     }
 
     return args;
-}
-
-//Reads input from storage.
-std::string NDNS::GetInput()
-{
-    if (!inputStorage.empty())
-    {
-        auto input = inputStorage.front();
-        inputStorage.pop();
-        return input;
-    }
-    else
-        return "";
 }
 
 std::string NDNS::Reverse(std::string input)

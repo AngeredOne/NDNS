@@ -12,28 +12,36 @@ Settings::Settings()
 
 void Settings::SetupFromConsole()
 {
-    std::cout << "Select devices" << std::endl;
+    NDNS::Get().WriteOutput("Select devices\n", SERVER);
 
-    std::cout << "OUTPUT:" << std::endl;
+    NDNS::Get().WriteOutput("OUTPUT\n", SERVER);
     for (int i = 0; i < SDL_GetNumAudioDevices(0); ++i)
-        std::cout << i << ": " << SDL_GetAudioDeviceName(i, 0) << std::endl;
+    {
+        std::string temp = std::string(std::to_string(i) + " : ");
+        temp += SDL_GetAudioDeviceName(i, 0);
+        NDNS::Get().WriteOutput(temp, SERVER);
+    }
 
-    std::cout << "option: ";
+    NDNS::Get().WriteOutput("Enter option.\n", SERVER);
 
     int index;
-    std::string input;
-    getline(std::cin, input);
+    std::string input = NDNS::Get().GetInput();
     index = atoi(input.c_str());
     auto outputDeviceName = SDL_GetAudioDeviceName(index, 0);
     Settings::Get().SetField(S_OUTPUT_DEVICE, outputDeviceName);
     std::cout << std::endl;
 
-    std::cout << "INPUT:" << std::endl;
+    NDNS::Get().WriteOutput("INPUT\n", SERVER);
     for (int i = 0; i < SDL_GetNumAudioDevices(1); ++i)
-        std::cout << i << ": " << SDL_GetAudioDeviceName(i, 1) << std::endl;
+    {
+        std::string temp = std::string(std::to_string(i) + " :");
+        temp += SDL_GetAudioDeviceName(i, 1);
+        NDNS::Get().WriteOutput(temp, SERVER);
+    }
 
-    std::cout << "option: ";
-    getline(std::cin, input);
+    NDNS::Get().WriteOutput("Enter option.\n", SERVER);
+
+    input = NDNS::Get().GetInput();
     index = atoi(input.c_str());
     auto inputDeviceName = SDL_GetAudioDeviceName(index, 1);
     Settings::Get().SetField(S_INPUT_DEVICE, inputDeviceName);

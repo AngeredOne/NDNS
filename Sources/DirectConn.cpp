@@ -202,11 +202,10 @@ void DirectConn::RecordVoice()
             if (data != nullptr && !muteIn)
             {
                 s_voice->send(buffer(data, AUDIO_BUF * 2));
+                delete[] data;
             }
 
-            delete data;
-
-            std::this_thread::sleep_for(chrono::milliseconds(20));
+             std::this_thread::sleep_for(chrono::milliseconds(20));
         }
         catch (const std::exception &e)
         {
@@ -230,7 +229,7 @@ void DirectConn::ListenVoice()
             if (!muteOut)
                 SDLAudioManager::Get().PlayAudio(samples);
 
-            delete samples;
+            delete[] samples;
 
             
 
@@ -246,14 +245,14 @@ void DirectConn::ListenVoice()
 
 void DirectConn::RecordTranslation()
 {
-    while (state == MESSAGING)
-        ;
+    // while (state == MESSAGING)
+    //     ;
 }
 
 void DirectConn::ListenTranslation()
 {
-    while (state == MESSAGING)
-        ;
+    // while (state == MESSAGING)
+    //     ;
 }
 
 void DirectConn::MuteInput()

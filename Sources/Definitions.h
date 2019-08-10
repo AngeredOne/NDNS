@@ -55,9 +55,10 @@ typedef std::shared_ptr<WINDOW> UIWindow_ptr;
 
 struct APPV
 {
-    char *appv = "1.r";
-    char *v_type = "STABLE";
+    char *appv = "02.r";
+    char *v_type = "STAGE";
     char *codename = "OhShitHereWeGoAgain";
+    char* date = "11.08.19";
 };
 
 #define ERROR_COLOR 1

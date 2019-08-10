@@ -64,7 +64,10 @@ Sint16 *SDLAudioManager::RecordAudio()
     }
 
     if (size == 0)
+    {
+        delete[] data;
         return nullptr;
+    }
     for (auto processor : inputProcessors)
     {
         processor->ProcessSound(data, AUDIO_BUF);

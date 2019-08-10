@@ -32,12 +32,13 @@ class NDNS
 public:
     static NDNS &Get();
 
-    std::string GetInput();
     void WriteOutput(std::string output, int8 code);
     void Start();
 
     std::list<std::string> Split(std::string input, std::string split, bool inversive = false);
     std::string Reverse(std::string input);
+
+    std::string GetInput();
 
     UIWindow_ptr settingsWindow;
     UIWindow_ptr globalWindow;
