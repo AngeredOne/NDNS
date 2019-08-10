@@ -21,6 +21,20 @@ NDNS &NDNS::Get()
 
 void NDNS::Start()
 {
+
+    initscr();
+
+    settingsWindow = UIWindow_ptr(newwin(8, COLS, 0, 0));
+    globalWindow = UIWindow_ptr(newwin(LINES - 10, COLS, 9, 0));
+    inputWindow = UIWindow_ptr(newwin(1, COLS, LINES - 1, 0));
+
+    start_color();
+
+    init_pair(ERROR_COLOR, COLOR_RED, 0);
+    init_pair(SERVER_COLOR, COLOR_GREEN, 0);
+    init_pair(CHAT_COLOR, COLOR_CYAN, 0);
+    init_pair(DEBUG_COLOR, COLOR_WHITE, 0);
+
     // Print greeting
     std::stringstream greeting;
     greeting << "<---===:::::::::::::::::::::===--->\n"
@@ -50,32 +64,53 @@ void NDNS::Start()
 
 void NDNS::WriteOutput(std::string output, int8 code)
 {
+    std::string output_s;
+    int color = 0;
+
     switch (code)
     {
     case ERROR:
-        std::cout << "ERROR:\n\033[0;31m" << output << "\033[0m\n";
+        color = ERROR_COLOR;
+        output_s = "ERROR:\n" + output + "\n";
         break;
     case SERVER:
-        std::cout << "Server: \033[1;32m" << output << "\033[0m\n";
+        color = SERVER_COLOR;
+        output_s = "Server: " + output + "\n";
         break;
     case CHAT:
-        std::cout << ">>> \033[0;35m" << output << "\033[0m\n";
+        color = CHAT_COLOR;
+        output_s = ">>> " + output + "\n";
         break;
     case DEBUG:
-        std::cout << "DEBUG:\n\033[1;37m" << output << "\033[0m\n";
+        color = DEBUG_COLOR;
+        output_s = "DEBUG:\n" + output + "\n";
         break;
     default:
-        std::cout << output;
+        output_s = output;
         break;
     };
+
+    wattron(globalWindow.get(), COLOR_PAIR(color));
+    waddstr(globalWindow.get(), output_s.data());
+    wattroff(globalWindow.get(), COLOR_PAIR(color));
+    wrefresh(globalWindow.get());
 }
 
 void NDNS::ListenInput()
 {
+    curs_set(0);
     while (true)
     {
         std::string input;
-        getline(std::cin, input);
+        char input_raw[256];
+
+        wgetstr(inputWindow.get(), input_raw);
+        wclear(inputWindow.get());
+        wrefresh(inputWindow.get());
+
+        if (input_raw)
+            input = std::string(input_raw);
+
         if (input[0] == '/')
         {
             if (auto command = commands.find(input[1]); command != commands.end())

@@ -56,7 +56,7 @@ bool SDLAudioManager::SetupOutput(const char *deviceName)
 Sint16 *SDLAudioManager::RecordAudio()
 {
     Sint16 *data = new Sint16[AUDIO_BUF];
-    auto size = SDL_DequeueAudio(input, data, AUDIO_BUF);
+    auto size = SDL_DequeueAudio(input, data, AUDIO_BUF * 2);
 
     if (SDL_GetQueuedAudioSize(input) > AUDIO_BUF * 4)
     {
@@ -86,7 +86,7 @@ void SDLAudioManager::PlayAudio(Sint16 *data)
             SDL_ClearQueuedAudio(output);
         }
 
-        SDL_QueueAudio(output, data, AUDIO_BUF);
+        SDL_QueueAudio(output, data, AUDIO_BUF * 2);
     }
 }
 

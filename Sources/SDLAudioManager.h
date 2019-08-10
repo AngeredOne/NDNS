@@ -4,7 +4,7 @@
 class AbstractSoundProcessor;
 
 
-const int AUDIO_BUF = 1024;
+const int AUDIO_BUF = 2048;
 
 class SDLAudioManager
 {
