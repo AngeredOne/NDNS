@@ -78,10 +78,6 @@ void NDNS::Volume_cmd(ArgsMap args)
     {
         Settings::Get().SetupFromConsole();
     }
-    if (args.find("threshold") != args.end())
-    {
-        Settings::Get().SetField(S_THRESHOLD_IN, args["threshold"].front());
-    }
 }
 
 void NDNS::Mute_cmd(ArgsMap args)

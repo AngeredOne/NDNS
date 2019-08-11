@@ -110,7 +110,6 @@ void Settings::InitFieldsMap()
 {
     allfields.emplace(FieldPair(S_VOLUME_IN, std::make_shared<VolumeControl>()));
     allfields.emplace(FieldPair(S_VOLUME_OUT, std::make_shared<VolumeControl>()));
-    allfields.emplace(FieldPair(S_THRESHOLD_IN, std::make_shared<ThresholdControl>()));
     allfields.emplace(FieldPair(S_LAST_IP, std::make_shared<LastIP>()));
     allfields.emplace(FieldPair(S_LAST_NICKNAME, std::make_shared<LastNickname>()));
     allfields.emplace(FieldPair(S_INPUT_DEVICE, std::make_shared<Device>(true)));

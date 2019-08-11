@@ -18,9 +18,6 @@ void SDLAudioManager::InitProcessors()
     auto controller = Settings::Get().GetField(S_VOLUME_IN);
     inputProcessors.push_back(std::make_shared<Volume>(std::bind(&VolumeControl::GetVolume, static_cast<VolumeControl *>(controller.get()))));
 
-    controller = Settings::Get().GetField(S_THRESHOLD_IN);
-    inputProcessors.push_back(std::make_shared<Threshold>(std::bind(&ThresholdControl::GetThreshold, static_cast<ThresholdControl *>(controller.get()))));
-
     controller = Settings::Get().GetField(S_VOLUME_OUT);
     outputProcessors.push_back(std::make_shared<Volume>(std::bind(&VolumeControl::GetVolume, static_cast<VolumeControl *>(controller.get()))));
 }

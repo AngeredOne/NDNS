@@ -202,8 +202,8 @@ void DirectConn::RecordVoice()
             if (data != nullptr && !muteIn)
             {
                 s_voice->send(buffer(data, AUDIO_BUF * 2));
-                delete[] data;
             }
+            delete[] data;
 
              std::this_thread::sleep_for(chrono::milliseconds(20));
         }

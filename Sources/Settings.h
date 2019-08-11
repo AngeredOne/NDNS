@@ -5,7 +5,6 @@ class SettingsField;
 
 const std::string S_VOLUME_IN = "volume-input";
 const std::string S_VOLUME_OUT = "volume-output";
-const std::string S_THRESHOLD_IN = "threshold-input";
 const std::string S_LAST_IP = "last-ip";
 const std::string S_LAST_NICKNAME = "last-nickname";
 const std::string S_INPUT_DEVICE = "device-input";
