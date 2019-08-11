@@ -106,8 +106,13 @@ std::string NDNS::GetInput()
     wclear(inputWindow.get());
     wrefresh(inputWindow.get());
 
-    if (input_raw)
+    try
+    {
         input = std::string(input_raw);
+    }
+    catch (std::exception &e)
+    {
+    }
 
     return input;
 }
@@ -129,7 +134,7 @@ void NDNS::ListenInput()
                     command->second.handler(*args);
                     delete args;
                 }
-                catch (std::exception e)
+                catch (std::exception &e)
                 {
                     WriteOutput(e.what(), ERROR);
                 }

@@ -18,7 +18,7 @@ void Threshold::ProcessSound(Sint16 *samples, int len)
     for (int i = 0; i < len; ++i)
     {
         loudness += *sample * *sample;
-        *sample++;
+        (*sample)++;
     }
     loudness = pow(loudness / len, 1.f / 2.f);
 
@@ -28,7 +28,7 @@ void Threshold::ProcessSound(Sint16 *samples, int len)
         for (int i = 0; i < len; ++i)
         {
             *sample = 0;
-            *sample++;
+            (*sample)++;
         }
     }
 }

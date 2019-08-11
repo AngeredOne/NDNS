@@ -53,5 +53,4 @@ void DirectConn::ChatMessage()
 
     message = message.erase(message.find(">-<"), 3);
     NDNS::Get().WriteOutput(message, CHAT);
-    message = "";
 }

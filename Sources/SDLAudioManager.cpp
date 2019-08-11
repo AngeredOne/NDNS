@@ -65,7 +65,7 @@ Sint16 *SDLAudioManager::RecordAudio()
 
     if (size == 0)
     {
-        delete[] data;
+        //delete[] data;
         return nullptr;
     }
     for (auto processor : inputProcessors)
