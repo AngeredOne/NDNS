@@ -93,7 +93,6 @@ void DirectConn::Connect(std::string rem)
     {
         NDNS::Get().WriteOutput("Connection already established.", ERROR);
     }
-    
 }
 
 void DirectConn::Setup()
@@ -202,10 +201,11 @@ void DirectConn::RecordVoice()
             if (data != nullptr && !muteIn)
             {
                 s_voice->send(buffer(data, AUDIO_BUF * 2));
-                delete[] data;
             }
 
-             std::this_thread::sleep_for(chrono::milliseconds(20));
+            delete[] data;
+
+            std::this_thread::sleep_for(chrono::milliseconds(20));
         }
         catch (const std::exception &e)
         {
@@ -230,8 +230,6 @@ void DirectConn::ListenVoice()
                 SDLAudioManager::Get().PlayAudio(samples);
 
             delete[] samples;
-
-            
 
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
