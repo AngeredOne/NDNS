@@ -48,7 +48,7 @@ void DirectConn::ChatMessage()
         int8 *msg = new int8[8];
         s_remote->read_some(buffer(msg, 8));
         message += std::string(msg, 8).c_str();
-        delete msg;
+        delete[] msg;
     }
 
     message = message.erase(message.find(">-<"), 3);

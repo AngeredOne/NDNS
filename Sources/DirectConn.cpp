@@ -136,6 +136,7 @@ void DirectConn::HandleConnection()
         }
         catch (std::exception &e)
         {
+
             NDNS::Get().WriteOutput("TCP connection dropped.", SERVER);
             state = ESTABLISHED;
             break;
@@ -194,16 +195,16 @@ void DirectConn::RecordVoice()
 
     while (state == MESSAGING)
     {
+        int16* data = nullptr;
+
         try
         {
-            auto data = SDLAudioManager::Get().RecordAudio();
+            data = SDLAudioManager::Get().RecordAudio();
 
             if (data != nullptr && !muteIn)
             {
                 s_voice->send(buffer(data, AUDIO_BUF * 2));
             }
-            delete[] data;
-
             std::this_thread::sleep_for(chrono::milliseconds(20));
         }
         catch (const std::exception &e)
@@ -211,6 +212,8 @@ void DirectConn::RecordVoice()
             NDNS::Get().WriteOutput("UDP Dropped", SERVER);
             Reset();
         }
+
+        if(data) delete[] data;
     }
 
     SDLAudioManager::Get().Stop();
@@ -220,15 +223,15 @@ void DirectConn::ListenVoice()
 {
     while (state == MESSAGING)
     {
+        int16 *samples = nullptr;
+
         try
         {
-            int16 *samples = new int16[AUDIO_BUF];
+            samples = new int16[AUDIO_BUF];
             s_voice->receive(buffer(samples, AUDIO_BUF * 2));
 
             if (!muteOut)
                 SDLAudioManager::Get().PlayAudio(samples);
-
-            delete[] samples;
 
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
@@ -237,6 +240,8 @@ void DirectConn::ListenVoice()
             NDNS::Get().WriteOutput("UDP Dropped", SERVER);
             Reset();
         }
+
+        if(samples) delete[] samples;
     }
 }
 
