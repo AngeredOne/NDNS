@@ -204,8 +204,6 @@ void DirectConn::RecordVoice()
             }
             delete[] data;
 
-            delete[] data;
-
             std::this_thread::sleep_for(chrono::milliseconds(20));
         }
         catch (const std::exception &e)
