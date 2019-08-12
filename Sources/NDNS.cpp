@@ -28,6 +28,8 @@ void NDNS::Start()
     globalWindow = UIWindow_ptr(newwin(LINES - 10, COLS, 9, 0));
     inputWindow = UIWindow_ptr(newwin(1, COLS, LINES - 1, 0));
 
+    scrollok(globalWindow.get(), TRUE);
+
     start_color();
 
     init_pair(ERROR_COLOR, COLOR_RED, 0);
@@ -42,21 +44,22 @@ void NDNS::Start()
              << "<---=== NO DISCORD NO SKYPE ===--->\n"
              << "<---===:::::::::::::::::::::===--->\n\n";
 
-    WriteOutput(greeting.str(), 0);
+   // WriteOutput(greeting.str(), 0);
 
     std::stringstream appv;
-    appv << "APPLICATION INFO: \n"
-         << "Version: " << app_ver.appv << "\n"
-         << "Type: " << app_ver.v_type << "\n"
-         << "Codename: " << app_ver.codename << "\n"
-         << "Date: " << __DATE__ << " at " << __TIME__ << "\n\n";
+    appv << "Version: " << app_ver.appv << " | "
+         << "Type: " << app_ver.v_type << " | "
+         << "Codename: " << app_ver.codename << " | "
+         << "Date: " << __DATE__ << " at " << __TIME__;
 
-    WriteOutput(appv.str(), 0);
+    waddstr(settingsWindow.get(), std::string("Flexer  " + appv.str()).c_str());
+    wrefresh(settingsWindow.get());
+
+    //WriteOutput(appv.str(), 0);
 
     InitCommands();
 
-    SDL_Init(SDL_INIT_AUDIO);
-    SDL_AudioInit(SDL_GetAudioDriver(0));
+    
     SDLAudioManager::Get().InitProcessors();
     DirectConn::Get();
 

@@ -22,23 +22,19 @@ public:
     bool SetupInput(const char *deviceName);
     bool SetupOutput(const char *deviceName);
 
-    Sint16 *RecordAudio();
+    bool RecordAudio(int16* data);
     void PlayAudio(Sint16 *data);
 
 private:
     SDLAudioManager(SDLAudioManager const &) = delete;
     SDLAudioManager &operator=(SDLAudioManager const &) = delete;
     SDLAudioManager();
-
-    ~SDLAudioManager()
-    {
-        SDL_CloseAudio();
-    }
+    ~SDLAudioManager();
 
     SDL_AudioSpec AUDIO_SPEC;
 
     std::list<std::shared_ptr<AbstractSoundProcessor>> inputProcessors;
-    SDL_AudioDeviceID input;
+    SDL_AudioDeviceID input = -1;
     std::list<std::shared_ptr<AbstractSoundProcessor>> outputProcessors;
-    SDL_AudioDeviceID output;
+    SDL_AudioDeviceID output = -1;
 };

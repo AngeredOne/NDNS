@@ -193,15 +193,15 @@ void DirectConn::RecordVoice()
 {
     SDLAudioManager::Get().Start();
 
+    static int16 *data = new int16[AUDIO_BUF];
+
     while (state == MESSAGING)
     {
-        int16* data = nullptr;
-
         try
         {
-            data = SDLAudioManager::Get().RecordAudio();
+            bool valid = SDLAudioManager::Get().RecordAudio(data);
 
-            if (data != nullptr && !muteIn)
+            if (valid && !muteIn)
             {
                 s_voice->send(buffer(data, AUDIO_BUF * 2));
             }
@@ -212,22 +212,22 @@ void DirectConn::RecordVoice()
             NDNS::Get().WriteOutput("UDP Dropped", SERVER);
             Reset();
         }
-
-        if(data) delete[] data;
     }
+
+    if (data)
+        delete[] data;
 
     SDLAudioManager::Get().Stop();
 }
 
 void DirectConn::ListenVoice()
 {
+    static int16 *samples = new int16[AUDIO_BUF];
+
     while (state == MESSAGING)
     {
-        int16 *samples = nullptr;
-
         try
         {
-            samples = new int16[AUDIO_BUF];
             s_voice->receive(buffer(samples, AUDIO_BUF * 2));
 
             if (!muteOut)
@@ -240,9 +240,9 @@ void DirectConn::ListenVoice()
             NDNS::Get().WriteOutput("UDP Dropped", SERVER);
             Reset();
         }
-
-        if(samples) delete[] samples;
     }
+    
+    delete[] samples;
 }
 
 void DirectConn::RecordTranslation()
